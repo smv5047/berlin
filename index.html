@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=800, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Operator OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EDE3D0;
+    --card: #F6EEDC;
+    --card-2: #F0E7D0;
+    --border: #E0D4BB;
+    --border-2: #E5DCC9;
+    --text: #1C1A15;
+    --mute2: #6B6359;
+    --label: #9A9388;
+    --accent: #D85A30;
+    --ok: #2E7D5F;
+    --warn: #C54B2B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+    width: 800px;
+    min-height: 1280px;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  body {
+    padding: 18px 18px 90px;
+  }
+
+  em, .i { font-family: 'IBM Plex Serif', Georgia, serif; font-style: italic; font-weight: 400; }
+  .serif { font-family: 'IBM Plex Serif', Georgia, serif; font-style: normal; font-weight: 400; }
+
+  .accent { color: var(--accent); }
+  .ok { color: var(--ok); }
+  .warn { color: var(--warn); }
+  .muted { color: var(--label); }
+  .mute2 { color: var(--mute2); }
+
+  /* SYSTEM BAR */
+  .sysbar {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--mute2); letter-spacing: 0.14em; font-weight: 500;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .sysbar .dot { color: var(--accent); }
+
+  /* SURFACE HEADER */
+  .surface-header {
+    display: flex; align-items: baseline; gap: 14px;
+    margin-bottom: 18px;
+  }
+  .surface-num {
+    font-size: 12px; color: var(--accent); letter-spacing: 0.18em; font-weight: 500;
+  }
+  .surface-title {
+    font-family: 'IBM Plex Serif', Georgia, serif; font-size: 30px; line-height: 1;
+  }
+  .surface-desc {
+    font-size: 10px; color: var(--mute2); letter-spacing: 0.14em; margin-left: auto; text-align: right;
+  }
+
+  /* SURFACE CONTAINER */
+  .surface {
+    display: none;
+    animation: fadeIn 0.45s ease-out;
+  }
+  .surface.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* CARD PRIMITIVES */
+  .card {
+    background: var(--card);
+    border: 0.5px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+  }
+  .card-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 11px; color: var(--label); letter-spacing: 0.14em;
+    margin-bottom: 14px;
+  }
+  .bar { height: 4px; background: var(--border-2); border-radius: 2px; overflow: hidden; margin-bottom: 12px; }
+  .bar > div { height: 100%; background: var(--text); }
+  .bar-accent > div { background: var(--accent); }
+  .bar-ok > div { background: var(--ok); }
+
+  /* =========================================================
+     SURFACE 01 — NOW
+  ========================================================= */
+  .now-hero-card {
+    padding: 26px 24px 22px;
+    margin-bottom: 12px;
+  }
+  .now-time {
+    display: flex; align-items: baseline; gap: 4px;
+    margin-bottom: 6px;
+  }
+  .now-time .big {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 110px; font-weight: 500; line-height: 0.9; letter-spacing: -0.04em;
+  }
+  .now-time .colon { color: var(--accent); }
+  .now-time .sec {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 28px; color: var(--label); margin-left: 10px;
+    line-height: 0.9;
+  }
+  .now-date {
+    font-size: 12px; color: var(--mute2); letter-spacing: 0.14em;
+    margin-bottom: 28px;
+  }
+  .now-label {
+    font-size: 11px; color: var(--accent); letter-spacing: 0.2em;
+    margin-bottom: 10px;
+  }
+  .now-block {
+    font-family: 'IBM Plex Serif', Georgia, serif;
+    font-size: 44px; line-height: 1.05;
+    margin-bottom: 8px;
+  }
+  .now-block-meta {
+    font-size: 12px; color: var(--mute2); letter-spacing: 0.1em;
+  }
+  .block-progress {
+    height: 4px; background: var(--border-2); border-radius: 2px; overflow: hidden;
+    margin-top: 14px;
+  }
+  .block-progress > div { height: 100%; background: var(--accent); }
+
+  .next-stack { display: flex; flex-direction: column; }
+  .next-item {
+    padding: 14px 0;
+    border-top: 0.5px solid var(--border-2);
+  }
+  .next-item:first-of-type { border-top: none; padding-top: 0; }
+  .next-item-row {
+    display: grid; grid-template-columns: 80px 1fr;
+    gap: 14px; align-items: baseline;
+  }
+  .next-item-lbl { font-size: 11px; color: var(--label); letter-spacing: 0.16em; }
+  .next-item-name {
+    font-family: 'IBM Plex Serif', Georgia, serif;
+    font-size: 22px; line-height: 1.1; margin-bottom: 4px;
+  }
+  .next-item-time {
+    font-size: 11px; color: var(--mute2); letter-spacing: 0.1em;
+  }
+
+  /* Timeline — compact for portrait */
+  .timeline { margin-top: 4px; }
+  .tl-row {
+    display: grid; grid-template-columns: 80px 14px 1fr auto;
+    align-items: center;
+    padding: 9px 0;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--mute2);
+  }
+  .tl-row.past { opacity: 0.4; }
+  .tl-row.active {
+    color: var(--text);
+  }
+  .tl-row.active .tl-name { font-weight: 500; }
+  .tl-time { font-size: 11px; letter-spacing: 0.06em; font-family: 'IBM Plex Mono', monospace; }
+  .tl-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--label);
+  }
+  .tl-row.active .tl-dot { background: var(--accent); box-shadow: 0 0 0 4px rgba(216,90,48,0.18); }
+  .tl-row.past .tl-dot { background: var(--border); }
+  .tl-name { font-size: 13px; }
+  .tl-meta { font-size: 10px; color: var(--label); letter-spacing: 0.1em; }
+
+  /* =========================================================
+     SURFACE 02 — TODAY (PRIMARY)
+  ========================================================= */
+  .today-hero {
+    padding: 22px 24px 20px;
+    margin-bottom: 12px;
+  }
+  .today-greet {
+    font-family: 'IBM Plex Serif', Georgia, serif;
+    font-size: 36px; line-height: 1.0;
+    margin-bottom: 10px;
+  }
+  .today-date {
+    font-size: 12px; color: var(--mute2); letter-spacing: 0.14em;
+  }
+  .today-time-row {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-top: 16px;
+  }
+  .today-clock {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 38px; font-weight: 500; letter-spacing: -0.02em;
+  }
+  .today-clock .colon { color: var(--accent); }
+  .today-status {
+    text-align: right;
+    font-size: 11px;
+    color: var(--mute2);
+    letter-spacing: 0.14em;
+  }
+  .today-status .now {
+    color: var(--accent); font-weight: 500;
+  }
+
+  .intent-stack { display: flex; flex-direction: column; gap: 14px; }
+  .intent-item {
+    border-left: 3px solid var(--accent);
+    padding-left: 16px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+  .intent-item .n {
+    font-size: 11px; color: var(--accent); letter-spacing: 0.22em;
+    margin-bottom: 6px;
+  }
+  .intent-item .t {
+    font-size: 17px; line-height: 1.35;
+  }
+
+  .input-section {
+    margin-bottom: 12px;
+  }
+  .col-title {
+    font-family: 'IBM Plex Serif', Georgia, serif;
+    font-size: 22px; line-height: 1; margin-bottom: 6px;
+  }
+  .col-meta {
+    font-size: 10px; color: var(--label); letter-spacing: 0.16em;
+    margin-bottom: 14px;
+  }
+
+  .tile-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .input-tile {
+    background: var(--card-2);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    min-height: 80px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .input-tile.full { grid-column: span 2; }
+  .input-tile .tlbl {
+    font-size: 10px; color: var(--label); letter-spacing: 0.16em;
+  }
+  .input-tile .tval {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 26px; font-weight: 500; line-height: 1; margin-top: 6px;
+  }
+  .input-tile .tval .u {
+    font-size: 11px; color: var(--label); letter-spacing: 0.1em; margin-left: 5px; font-weight: 400;
+  }
+  .input-tile .tval .target {
+    font-size: 11px; color: var(--label); letter-spacing: 0.1em; margin-left: 5px; font-weight: 400;
+  }
+  .input-tile.check .tval {
+    font-size: 14px; display: flex; align-items: center; gap: 10px;
+  }
+  .check-mark {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 5px;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .check-mark.done { background: var(--text); color: var(--card); }
+  .check-mark.empty { border: 1px solid var(--label); color: transparent; }
+  .check-mark.miss { background: var(--border-2); color: var(--label); }
+
+  /* =========================================================
+     SURFACE 03 — WEEK
+  ========================================================= */
+  .week-hero {
+    padding: 22px 24px;
+    margin-bottom: 12px;
+  }
+  .week-hero-title {
+    font-family: 'IBM Plex Serif', Georgia, serif; font-size: 32px; line-height: 1;
+    margin-bottom: 8px;
+  }
+  .week-hero-sub {
+    font-size: 11px; color: var(--mute2); letter-spacing: 0.14em;
+  }
+  .week-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 0.5px solid var(--border-2);
+  }
+  .wh-stat .l {
+    font-size: 10px; color: var(--label); letter-spacing: 0.14em; margin-bottom: 6px;
+  }
+  .wh-stat .v {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 26px; font-weight: 500;
+  }
+
+  .front-title { font-family: 'IBM Plex Serif', Georgia, serif; font-size: 22px; line-height: 1.1; margin-bottom: 4px; }
+  .front-sub { font-size: 11px; color: var(--mute2); letter-spacing: 0.14em; margin-bottom: 14px; }
+
+  .signal-row {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding: 11px 0;
+    border-top: 0.5px solid var(--border-2);
+  }
+  .signal-row:first-of-type { border-top: none; padding-top: 0; }
+  .signal-label { font-size: 13px; color: var(--mute2); }
+  .signal-value { font-family: 'IBM Plex Mono', monospace; font-size: 18px; font-weight: 500; }
+  .signal-trend { font-size: 11px; color: var(--label); letter-spacing: 0.1em; }
+  .spark { display: inline-flex; align-items: end; gap: 2px; height: 14px; margin-right: 8px; vertical-align: middle; }
+  .spark span { width: 3px; background: var(--mute2); border-radius: 1px; }
+
+  .rollup-section {
+    margin-top: 14px; padding-top: 12px;
+    border-top: 0.5px dashed var(--border);
+  }
+  .rollup-head {
+    font-size: 10px; color: var(--label); letter-spacing: 0.18em; margin-bottom: 10px;
+  }
+  .rollup-row {
+    display: flex; justify-content: space-between;
+    font-size: 13px; padding: 4px 0;
+  }
+  .rollup-row .r { font-family: 'IBM Plex Mono', monospace; color: var(--text); }
+
+  /* =========================================================
+     SURFACE 04 — SPRINT
+  ========================================================= */
+  .sprint-hero {
+    padding: 26px 24px 24px;
+    margin-bottom: 12px;
+  }
+  .sprint-label {
+    font-size: 11px; color: var(--accent); letter-spacing: 0.2em; font-weight: 500; margin-bottom: 10px;
+  }
+  .sprint-hero-title {
+    font-family: 'IBM Plex Serif', Georgia, serif; font-size: 38px; line-height: 1.02; margin-bottom: 8px;
+  }
+  .sprint-hero-sub {
+    font-size: 11px; color: var(--mute2); letter-spacing: 0.14em; margin-bottom: 18px;
+  }
+  .sprint-summary {
+    font-family: 'IBM Plex Serif', Georgia, serif;
+    font-size: 16px; line-height: 1.55;
+    color: #2A2620;
+  }
+
+  .spstrip-card {
+    padding: 18px 22px;
+    margin-bottom: 10px;
+  }
+  .spstrip-row-top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 12px;
+  }
+  .spstrip-lbl {
+    font-size: 10px; color: var(--label); letter-spacing: 0.18em;
+  }
+  .spstrip-status {
+    font-size: 10px; letter-spacing: 0.16em; font-weight: 500;
+  }
+  .spstrip-title {
+    font-family: 'IBM Plex Serif', Georgia, serif; font-size: 20px; line-height: 1.1; margin-bottom: 12px;
+  }
+  .spstrip-row {
+    display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;
+  }
+  .spstrip-side {
+    font-size: 11px; color: var(--label); letter-spacing: 0.1em; font-family: 'IBM Plex Mono', monospace;
+  }
+  .spstrip-current {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 30px; font-weight: 500;
+  }
+
+  .narr-card { padding: 18px 22px; margin-bottom: 10px; }
+  .narr-section { margin-bottom: 14px; }
+  .narr-section:last-child { margin-bottom: 0; }
+  .narr-head {
+    font-size: 10px; color: var(--label); letter-spacing: 0.18em; margin-bottom: 6px;
+  }
+  .narr-body {
+    font-size: 13px; line-height: 1.55; color: #2A2620;
+  }
+
+  /* =========================================================
+     BOTTOM NAV — touch-friendly
+  ========================================================= */
+  .nav-bar {
+    position: fixed; bottom: 0; left: 0;
+    width: 800px;
+    background: rgba(237,227,208,0.96);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 0.5px solid var(--border);
+    padding: 14px 18px;
+    display: flex; justify-content: space-between; align-items: center;
+    z-index: 50;
+    gap: 10px;
+  }
+  .nav-left { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
+  .nav-btn {
+    background: transparent; border: none;
+    font-family: inherit; font-size: 11px; letter-spacing: 0.16em; font-weight: 500;
+    color: var(--label); cursor: pointer;
+    padding: 10px 12px;
+    border-radius: 8px;
+    transition: all 0.15s;
+    white-space: nowrap;
+    min-height: 44px;
+  }
+  .nav-btn:active { background: var(--card-2); }
+  .nav-btn.active { color: var(--text); background: var(--card); }
+  .nav-btn.active .dot {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); margin-right: 6px; vertical-align: middle;
+  }
+  .nav-right {
+    display: flex; gap: 12px; align-items: center;
+    font-size: 10px; color: var(--label); letter-spacing: 0.14em;
+  }
+  .auto-toggle {
+    font-family: inherit; background: transparent;
+    border: 0.5px solid var(--border);
+    color: var(--mute2); font-size: 11px; letter-spacing: 0.14em;
+    padding: 10px 14px; border-radius: 8px;
+    min-height: 44px;
+  }
+  .auto-toggle.on { color: var(--accent); border-color: var(--accent); }
+  .rotation-progress {
+    width: 50px; height: 3px; background: var(--border-2); border-radius: 2px; overflow: hidden;
+  }
+  .rotation-progress > div {
+    height: 100%; background: var(--accent); width: 0%;
+    transition: width 0.1s linear;
+  }
+
+  /* No-scroll for kiosk feel */
+  html { -webkit-overflow-scrolling: touch; }
+</style>
+</head>
+<body>
+
+<!-- SYSTEM BAR -->
+<div class="sysbar">
+  <div><span class="dot">●</span>&nbsp;&nbsp;OPERATOR OS // V2.6</div>
+  <div id="sb-sprint">SPRINT 26 · DAY 16/42</div>
+</div>
+
+<!-- ==================== SURFACE 01 : NOW ==================== -->
+<div class="surface" data-surface="now">
+  <div class="surface-header">
+    <div class="surface-num">01 //</div>
+    <div class="surface-title">Now</div>
+    <div class="surface-desc">CURRENT BLOCK<br>WHAT'S NEXT</div>
+  </div>
+
+  <div class="card now-hero-card">
+    <div class="now-time">
+      <span class="big" id="now-hour">14</span>
+      <span class="big colon">:</span>
+      <span class="big" id="now-min">25</span>
+      <span class="sec" id="now-sec">18</span>
+    </div>
+    <div class="now-date" id="now-date">TUESDAY · APRIL 21, 2026</div>
+
+    <div class="now-label">FOCUS NOW</div>
+    <div class="now-block" id="now-block-name">Project A · <em>deep work</em></div>
+    <div class="now-block-meta" id="now-block-meta">8:15 AM – 12:00 PM &nbsp;·&nbsp; 72% ELAPSED</div>
+    <div class="block-progress"><div id="block-progress-bar" style="width:72%"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span>UP NEXT</span>
+      <span id="next-countdown">IN 35 MIN</span>
+    </div>
+    <div class="next-stack" id="next-stack"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span>TODAY · <span id="today-dow">TUESDAY</span></span>
+      <span id="today-blocks-count">12 BLOCKS</span>
+    </div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+</div>
+
+<!-- ==================== SURFACE 02 : TODAY (PRIMARY) ==================== -->
+<div class="surface active" data-surface="today">
+  <div class="surface-header">
+    <div class="surface-num">02 //</div>
+    <div class="surface-title">Today</div>
+    <div class="surface-desc">3 COMMITMENTS<br>12 INPUTS</div>
+  </div>
+
+  <div class="card today-hero">
+    <div class="today-greet" id="today-greet">Good <em>afternoon</em>.</div>
+    <div class="today-date" id="today-date-str">TUESDAY · APRIL 21 · DAY 16 OF 42</div>
+    <div class="today-time-row">
+      <div class="today-clock">
+        <span id="today-hour">14</span><span class="colon">:</span><span id="today-min">25</span>
+      </div>
+      <div class="today-status">
+        <div class="now" id="today-now-block">PROJECT A · DEEP WORK</div>
+        <div id="today-now-meta" style="margin-top:3px;">UNTIL 5:00 PM</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span>INTENT · 3 COMMITMENTS</span>
+      <span>BY 9:00 PM</span>
+    </div>
+    <div class="intent-stack">
+      <div class="intent-item">
+        <div class="n">01</div>
+        <div class="t">Ship next deliverable to Lead for review.</div>
+      </div>
+      <div class="intent-item">
+        <div class="n">02</div>
+        <div class="t">Run 4 miles before 5pm. No excuses.</div>
+      </div>
+      <div class="intent-item">
+        <div class="n">03</div>
+        <div class="t">One outbound conversation booked this week.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card input-section">
+    <div class="card-head">
+      <span>BODY · SUB-200 FRONT</span>
+      <span class="muted">DAILY</span>
+    </div>
+    <div class="col-title">Fuel + <em>move</em>.</div>
+    <div class="col-meta">TRACKED BY 9PM</div>
+    <div class="tile-grid">
+      <div class="input-tile check">
+        <div class="tlbl">WORKOUT</div>
+        <div class="tval"><span class="check-mark empty">○</span> <span class="muted" style="font-size:12px;">PLANNED 4PM</span></div>
+      </div>
+      <div class="input-tile">
+        <div class="tlbl">SLEEP</div>
+        <div class="tval">7.4<span class="u">HRS</span></div>
+      </div>
+      <div class="input-tile">
+        <div class="tlbl">PROTEIN</div>
+        <div class="tval">24<span class="target">/ 180G</span></div>
+      </div>
+      <div class="input-tile">
+        <div class="tlbl">DRINKS</div>
+        <div class="tval">0<span class="target">/ ≤1</span></div>
+      </div>
+      <div class="input-tile full">
+        <div class="tlbl">STEPS</div>
+        <div class="tval">1,842<span class="target">/ 10K</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card input-section">
+    <div class="card-head">
+      <span>BUILD · WORK + SIDE</span>
+      <span class="muted">DAILY</span>
+    </div>
+    <div class="col-title">Ship the <em>work</em>.</div>
+    <div class="col-meta">WORK HOURS</div>
+    <div class="tile-grid">
+      <div class="input-tile check">
+        <div class="tlbl">WORK TOUCH</div>
+        <div class="tval"><span class="check-mark empty">○</span> <span class="muted" style="font-size:12px;">NEXT</span></div>
+      </div>
+      <div class="input-tile check">
+        <div class="tlbl">PATHWAY</div>
+        <div class="tval"><span class="check-mark miss">—</span> <span class="muted" style="font-size:12px;">N/A</span></div>
+      </div>
+      <div class="input-tile check">
+        <div class="tlbl">PROSPECT</div>
+        <div class="tval"><span class="check-mark empty">○</span> <span class="accent" style="font-size:12px;">GOAL · 1</span></div>
+      </div>
+      <div class="input-tile check">
+        <div class="tlbl">SIDE ENTRY</div>
+        <div class="tval"><span class="check-mark empty">○</span> <span class="muted" style="font-size:12px;">CAPTURE</span></div>
+      </div>
+      <div class="input-tile check full">
+        <div class="tlbl">LINKEDIN</div>
+        <div class="tval"><span class="check-mark empty">○</span> <span class="muted" style="font-size:12px;">1 / 2 THIS WEEK</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card input-section">
+    <div class="card-head">
+      <span>SELF · MAINTENANCE</span>
+      <span class="muted">DAILY</span>
+    </div>
+    <div class="col-title">Don't <em>drift</em>.</div>
+    <div class="col-meta">RITUAL + FAMILY</div>
+    <div class="tile-grid">
+      <div class="input-tile check">
+        <div class="tlbl">MORNING</div>
+        <div class="tval"><span class="check-mark done">✓</span> <span class="ok" style="font-size:12px;">DONE</span></div>
+      </div>
+      <div class="input-tile">
+        <div class="tlbl">WRITING</div>
+        <div class="tval">0<span class="target">/ 30M</span></div>
+      </div>
+      <div class="input-tile check">
+        <div class="tlbl">WRITING</div>
+        <div class="tval"><span class="check-mark empty">○</span> <span class="muted" style="font-size:12px;">NEXT CH</span></div>
+      </div>
+      <div class="input-tile check">
+        <div class="tlbl">FAMILY</div>
+        <div class="tval"><span class="check-mark empty">○</span> <span class="muted" style="font-size:12px;">6:30</span></div>
+      </div>
+      <div class="input-tile full">
+        <div class="tlbl">READING</div>
+        <div class="tval">0<span class="target">MIN · CURRENT BOOK</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SURFACE 03 : WEEK ==================== -->
+<div class="surface" data-surface="week">
+  <div class="surface-header">
+    <div class="surface-num">03 //</div>
+    <div class="surface-title">Week</div>
+    <div class="surface-desc">THREE FRONTS<br>SIGNALS + ROLLUPS</div>
+  </div>
+
+  <div class="card week-hero">
+    <div style="font-size:11px;color:var(--accent);letter-spacing:0.2em;font-weight:500;margin-bottom:8px;">WEEK 3 OF SPRINT 26</div>
+    <div class="week-hero-title">Week of <em>April 20</em></div>
+    <div class="week-hero-sub">MON 20 · TUE 21 · WED 22 · THU 23 · FRI 24 · SAT 25 · SUN 26</div>
+    <div class="week-stats">
+      <div class="wh-stat">
+        <div class="l">DAYS LEFT</div>
+        <div class="v">26</div>
+      </div>
+      <div class="wh-stat">
+        <div class="l">ON PACE</div>
+        <div class="v">2<span class="muted" style="font-size:14px;">/3</span></div>
+      </div>
+      <div class="wh-stat">
+        <div class="l">HIT RATE</div>
+        <div class="v">78<span class="muted" style="font-size:14px;">%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span>FRONT · BODY</span>
+      <span class="ok">ON PACE</span>
+    </div>
+    <div class="front-title">Sub-<em>200</em> lbs</div>
+    <div class="front-sub">218 → 207.4 → 199</div>
+
+    <div class="signal-row">
+      <div class="signal-label">Weight · 7-day</div>
+      <div style="text-align:right;">
+        <span class="spark" id="sp-weight"></span>
+        <span class="signal-value">207.4</span>
+        <div class="signal-trend ok">▼ 0.8 / WK</div>
+      </div>
+    </div>
+    <div class="signal-row">
+      <div class="signal-label">HRV · 7-day</div>
+      <div style="text-align:right;">
+        <span class="spark" id="sp-hrv"></span>
+        <span class="signal-value">54<span class="muted" style="font-size:11px;">MS</span></span>
+        <div class="signal-trend ok">▲ 4 / WK</div>
+      </div>
+    </div>
+    <div class="signal-row">
+      <div class="signal-label">VO₂ max</div>
+      <div style="text-align:right;">
+        <span class="signal-value">38.4</span>
+        <div class="signal-trend warn">▼ 0.6 / MO</div>
+      </div>
+    </div>
+
+    <div class="rollup-section">
+      <div class="rollup-head">INPUTS · THIS WEEK</div>
+      <div class="rollup-row"><span>Workouts</span><span class="r">3 / 5</span></div>
+      <div class="rollup-row"><span>Protein avg</span><span class="r">152g</span></div>
+      <div class="rollup-row"><span>Sleep avg</span><span class="r">7.1 hr</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span>FRONT · BUILD</span>
+      <span class="ok">ON PACE</span>
+    </div>
+    <div class="front-title">Work · <em>Program</em></div>
+    <div class="front-sub">PHASE 1 · 2 · 3</div>
+
+    <div class="signal-row">
+      <div class="signal-label">Systems registered</div>
+      <div style="text-align:right;">
+        <span class="spark" id="sp-reg"></span>
+        <span class="signal-value">14</span>
+        <div class="signal-trend ok">+3 / WK</div>
+      </div>
+    </div>
+    <div class="signal-row">
+      <div class="signal-label">Gov reviews closed</div>
+      <div style="text-align:right;">
+        <span class="signal-value">6</span>
+        <div class="signal-trend">+1 / WK</div>
+      </div>
+    </div>
+    <div class="signal-row">
+      <div class="signal-label">Time to approval</div>
+      <div style="text-align:right;">
+        <span class="signal-value">4.2<span class="muted" style="font-size:11px;">D</span></span>
+        <div class="signal-trend ok">▼ FROM 6.1</div>
+      </div>
+    </div>
+
+    <div class="rollup-section">
+      <div class="rollup-head">INPUTS · THIS WEEK</div>
+      <div class="rollup-row"><span>Stakeholder touches</span><span class="r">8 / 10</span></div>
+      <div class="rollup-row"><span>Pathway sessions</span><span class="r">2 / 2</span></div>
+      <div class="rollup-row"><span>Project runs</span><span class="r">5</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span>FRONT · REVENUE</span>
+      <span class="accent">AT RISK</span>
+    </div>
+    <div class="front-title">Side · first <em>revenue</em></div>
+    <div class="front-sub">$0 · SIGNED BY 5/22</div>
+
+    <div class="signal-row">
+      <div class="signal-label">Warm intros</div>
+      <div style="text-align:right;">
+        <span class="signal-value">3</span>
+        <div class="signal-trend">+1 / WK</div>
+      </div>
+    </div>
+    <div class="signal-row">
+      <div class="signal-label">Qualified convos</div>
+      <div style="text-align:right;">
+        <span class="signal-value">2</span>
+        <div class="signal-trend warn">FLAT 2 WKS</div>
+      </div>
+    </div>
+    <div class="signal-row">
+      <div class="signal-label">Proposals sent</div>
+      <div style="text-align:right;">
+        <span class="signal-value">0</span>
+        <div class="signal-trend accent">NEEDS ONE</div>
+      </div>
+    </div>
+
+    <div class="rollup-section">
+      <div class="rollup-head">INPUTS · THIS WEEK</div>
+      <div class="rollup-row"><span>Prospect outreach</span><span class="r accent">2 / 5</span></div>
+      <div class="rollup-row"><span>LinkedIn posts</span><span class="r">1 / 2</span></div>
+      <div class="rollup-row"><span>Side entries</span><span class="r">4 / 3</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SURFACE 04 : SPRINT ==================== -->
+<div class="surface" data-surface="sprint">
+  <div class="surface-header">
+    <div class="surface-num">04 //</div>
+    <div class="surface-title">Sprint</div>
+    <div class="surface-desc">6-WEEK OUTCOMES<br>NEXT 10 DAYS</div>
+  </div>
+
+  <div class="card sprint-hero">
+    <div class="sprint-label">SPRINT 26 · MID-SPRINT</div>
+    <div class="sprint-hero-title">Three <em>fronts</em>.<br>Day 16 <em>of</em> 42.</div>
+    <div class="sprint-hero-sub">APR 6, 2026 → MAY 22, 2026</div>
+    <div class="sprint-summary">
+      Body on pace. Work program compounding — <em>Phase 1 shipped</em>, Phase 2 scoping. <em>Revenue lagging</em> — warm signals exist but conversion stalled. Next 10 days need one proposal sent.
+    </div>
+  </div>
+
+  <div class="card spstrip-card">
+    <div class="spstrip-row-top">
+      <span class="spstrip-lbl">FRONT · BODY</span>
+      <span class="spstrip-status ok">ON PACE</span>
+    </div>
+    <div class="spstrip-title">Sub-<em>200</em> lbs</div>
+    <div class="spstrip-row">
+      <span class="spstrip-side">START · 218</span>
+      <span class="spstrip-side">TARGET · 199</span>
+    </div>
+    <div class="spstrip-current">207.4<span class="muted" style="font-size:13px;margin-left:6px;">LBS</span></div>
+    <div class="bar bar-ok" style="margin-top:12px;margin-bottom:4px;"><div style="width:64%;"></div></div>
+    <div style="font-size:11px;color:var(--ok);letter-spacing:0.14em;">64% COMPLETE</div>
+  </div>
+
+  <div class="card spstrip-card">
+    <div class="spstrip-row-top">
+      <span class="spstrip-lbl">FRONT · BUILD</span>
+      <span class="spstrip-status ok">ON PACE</span>
+    </div>
+    <div class="spstrip-title">Work <em>Program</em></div>
+    <div class="spstrip-row">
+      <span class="spstrip-side">PHASE 1 · DONE</span>
+      <span class="spstrip-side">PHASES MATURE</span>
+    </div>
+    <div class="spstrip-current">PHASE 2 / 3</div>
+    <div class="bar" style="margin-top:12px;margin-bottom:4px;"><div style="width:48%;"></div></div>
+    <div style="font-size:11px;color:var(--ok);letter-spacing:0.14em;">48% · P2 SCOPED</div>
+  </div>
+
+  <div class="card spstrip-card">
+    <div class="spstrip-row-top">
+      <span class="spstrip-lbl">FRONT · REVENUE</span>
+      <span class="spstrip-status accent">AT RISK</span>
+    </div>
+    <div class="spstrip-title">First <em>external</em> revenue</div>
+    <div class="spstrip-row">
+      <span class="spstrip-side">$0</span>
+      <span class="spstrip-side">SIGNED 5/22</span>
+    </div>
+    <div class="spstrip-current accent">$0</div>
+    <div class="bar bar-accent" style="margin-top:12px;margin-bottom:4px;"><div style="width:22%;"></div></div>
+    <div style="font-size:11px;color:var(--accent);letter-spacing:0.14em;">22% · NEEDS PROPOSAL</div>
+  </div>
+
+  <div class="card narr-card">
+    <div class="card-head">
+      <span>NEXT 10 DAYS · COMMITMENTS</span>
+    </div>
+    <div class="narr-section">
+      <div class="narr-head">01 · SHIP ONE PROPOSAL</div>
+      <div class="narr-body">Send one proposal this period. Dedicated outbound blocks Tue + Thu.</div>
+    </div>
+    <div class="narr-section">
+      <div class="narr-head">02 · RESTART CARDIO</div>
+      <div class="narr-body">Two zone-2 runs per week. Track VO₂ weekly, not monthly.</div>
+    </div>
+    <div class="narr-section">
+      <div class="narr-head">03 · PHASE 2 SCOPING</div>
+      <div class="narr-body">Scope next phase deliverables — doc to Lead by end of week.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== BOTTOM NAV ==================== -->
+<div class="nav-bar">
+  <div class="nav-left">
+    <button class="nav-btn" data-idx="0">01·NOW</button>
+    <button class="nav-btn active" data-idx="1"><span class="dot"></span>02·TODAY</button>
+    <button class="nav-btn" data-idx="2">03·WEEK</button>
+    <button class="nav-btn" data-idx="3">04·SPRINT</button>
+  </div>
+  <div class="nav-right">
+    <div class="rotation-progress"><div id="rot-prog"></div></div>
+    <button class="auto-toggle on" id="auto-toggle">AUTO</button>
+  </div>
+</div>
+
+<script>
+  // =========================================================
+  // CONFIG
+  // =========================================================
+  const SURFACES = ['now', 'today', 'week', 'sprint'];
+
+  // Per-surface rotation duration in ms — TODAY is primary
+  const ROTATE_DURATIONS = {
+    now: 30000,
+    today: 40000,
+    week: 25000,
+    sprint: 25000
+  };
+
+  // Time-of-day adaptive default — bias rotation by phase of day
+  // Returns the index that should get a "boost" this rotation cycle
+  function getPrimarySurface() {
+    const h = new Date().getHours();
+    if (h >= 9 && h < 17) return 0; // NOW during work hours
+    return 1; // TODAY otherwise (mornings, evenings)
+  }
+
+  // Daily schedule — Operator's weekly rhythm
+  const SCHEDULES = {
+    weekday: [
+      { start: 330,  end: 420,  name: 'Sleep',               meta: '' },
+      { start: 530,  end: 700,  name: 'Build / Write',       meta: 'DOLAB · DEEP WORK' },
+      { start: 700,  end: 800,  name: 'Morning ritual',      meta: 'FAMILY · COFFEE · MOVE' },
+      { start: 800,  end: 815,  name: 'Task scan',           meta: 'ASANA · INBOX' },
+      { start: 815,  end: 1200, name: 'Project A · deep work',  meta: 'PROGRAM WORK' },
+      { start: 1200, end: 1300, name: 'Lunch',               meta: '' },
+      { start: 1300, end: 1700, name: 'Project A · collab',   meta: 'MEETINGS' },
+      { start: 1700, end: 1715, name: 'Comms',               meta: 'EMAIL · TEXTS' },
+      { start: 1715, end: 1730, name: 'Task close',          meta: 'ASANA · TOMORROW' },
+      { start: 1730, end: 2100, name: 'Family',              meta: 'DINNER · KIDS' },
+      { start: 2100, end: 2130, name: 'Reader Feed',         meta: '' },
+      { start: 2130, end: 2200, name: 'Wind down',           meta: '' }
+    ],
+    tuethu: [
+      { start: 330,  end: 420,  name: 'Sleep',               meta: '' },
+      { start: 530,  end: 700,  name: 'Build / Write',       meta: 'DOLAB · DEEP WORK' },
+      { start: 700,  end: 800,  name: 'Morning ritual',      meta: 'FAMILY · COFFEE' },
+      { start: 800,  end: 815,  name: 'Task scan',           meta: 'ASANA · INBOX' },
+      { start: 815,  end: 1200, name: 'Project A · deep work',  meta: 'PROGRAM WORK' },
+      { start: 1200, end: 1300, name: 'Lunch',               meta: '' },
+      { start: 1300, end: 1700, name: 'Project A · collab',   meta: 'MEETINGS' },
+      { start: 1700, end: 1715, name: 'Comms',               meta: 'EMAIL · TEXTS' },
+      { start: 1715, end: 1730, name: 'Task close',          meta: 'ASANA · TOMORROW' },
+      { start: 1730, end: 1930, name: 'Family',              meta: 'DINNER · KIDS' },
+      { start: 1930, end: 2100, name: 'Build / Write',       meta: 'DOLAB · EVENING' },
+      { start: 2100, end: 2130, name: 'Reader Feed',         meta: '' },
+      { start: 2130, end: 2200, name: 'Wind down',           meta: '' }
+    ],
+    saturday: [
+      { start: 330,  end: 420,  name: 'Sleep',               meta: '' },
+      { start: 630,  end: 700,  name: 'Reader Saved',        meta: 'DEEP READING' },
+      { start: 700,  end: 900,  name: 'Family',              meta: 'BREAKFAST · SLOW' },
+      { start: 900,  end: 1200, name: 'Build / Write',       meta: 'DOLAB BLOCK' },
+      { start: 1200, end: 1700, name: 'Family',              meta: 'ACTIVITIES' },
+      { start: 1700, end: 2100, name: 'Family',              meta: 'DINNER · GAMES' },
+      { start: 2100, end: 2200, name: 'Wind down',           meta: '' }
+    ],
+    sunday: [
+      { start: 330,  end: 420,  name: 'Sleep',               meta: '' },
+      { start: 700,  end: 900,  name: 'Family',              meta: 'BREAKFAST' },
+      { start: 900,  end: 1200, name: 'Family · Church',     meta: '' },
+      { start: 1200, end: 1600, name: 'Family',              meta: 'LUNCH · REST' },
+      { start: 1600, end: 1800, name: 'Sunday Review',       meta: 'WEEK PLANNING' },
+      { start: 1800, end: 2100, name: 'Family',              meta: 'DINNER · READING' },
+      { start: 2100, end: 2200, name: 'Wind down',           meta: '' }
+    ]
+  };
+
+  function getScheduleForDay(dow) {
+    if (dow === 6) return SCHEDULES.saturday;
+    if (dow === 0) return SCHEDULES.sunday;
+    if (dow === 2 || dow === 4) return SCHEDULES.tuethu;
+    return SCHEDULES.weekday;
+  }
+
+  // =========================================================
+  // TIME RENDERING
+  // =========================================================
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function timeToMinutes(hhmm) {
+    const h = Math.floor(hhmm / 100);
+    const m = hhmm % 100;
+    return h * 60 + m;
+  }
+  function fmtTime(hhmm) {
+    const h24 = Math.floor(hhmm / 100);
+    const m = hhmm % 100;
+    const h12 = h24 === 0 ? 12 : (h24 > 12 ? h24 - 12 : h24);
+    const ampm = h24 < 12 ? 'AM' : 'PM';
+    return h12 + ':' + pad(m) + ampm;
+  }
+  function getGreeting(h) {
+    if (h < 5) return 'Good <em>night</em>.';
+    if (h < 12) return 'Good <em>morning</em>.';
+    if (h < 17) return 'Good <em>afternoon</em>.';
+    if (h < 21) return 'Good <em>evening</em>.';
+    return 'Wind <em>down</em>.';
+  }
+
+  function formatBlockName(name) {
+    const map = {
+      'Build / Write': 'Build / <em>Write</em>',
+      'Morning ritual': 'Morning <em>ritual</em>',
+      'Task scan': 'Task <em>scan</em>',
+      'Project A · deep work': 'Project A · <em>deep work</em>',
+      'Project A · collab': 'Project A · <em>collab</em>',
+      'Comms': '<em>Comms</em>',
+      'Task close': 'Task <em>close</em>',
+      'Family': '<em>Family</em>',
+      'Reader Feed': 'Reader <em>Feed</em>',
+      'Reader Saved': 'Reader <em>Saved</em>',
+      'Wind down': 'Wind <em>down</em>',
+      'Lunch': '<em>Lunch</em>',
+      'Sleep': '<em>Sleep</em>',
+      'Sunday Review': 'Sunday <em>Review</em>',
+      'Family · Church': 'Family · <em>Church</em>'
+    };
+    return map[name] || name;
+  }
+
+  function renderTime() {
+    const now = new Date();
+    const h = now.getHours();
+    const m = now.getMinutes();
+    const s = now.getSeconds();
+    const dow = now.getDay();
+
+    // NOW surface clock
+    const nh = document.getElementById('now-hour');
+    const nm = document.getElementById('now-min');
+    const ns = document.getElementById('now-sec');
+    if (nh) nh.textContent = pad(h);
+    if (nm) nm.textContent = pad(m);
+    if (ns) ns.textContent = pad(s);
+
+    // TODAY surface clock
+    const th = document.getElementById('today-hour');
+    const tm = document.getElementById('today-min');
+    if (th) th.textContent = pad(h);
+    if (tm) tm.textContent = pad(m);
+
+    // Greeting
+    const greet = document.getElementById('today-greet');
+    if (greet) greet.innerHTML = getGreeting(h);
+
+    // Date
+    const days = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+    const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+    const monthsShort = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+
+    const longDate = days[dow] + ' · ' + months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+    const shortDate = days[dow] + ' · ' + monthsShort[now.getMonth()] + ' ' + now.getDate() + ' · DAY 16 OF 42';
+
+    const ndateEl = document.getElementById('now-date');
+    if (ndateEl) ndateEl.textContent = longDate;
+    const tdateEl = document.getElementById('today-date-str');
+    if (tdateEl) tdateEl.textContent = shortDate;
+
+    const dowEl = document.getElementById('today-dow');
+    if (dowEl) dowEl.textContent = days[dow];
+
+    // Schedule
+    const schedule = getScheduleForDay(dow);
+    const nowMin = h * 60 + m;
+
+    let currentIdx = -1;
+    for (let i = 0; i < schedule.length; i++) {
+      const bStart = timeToMinutes(schedule[i].start);
+      const bEnd = timeToMinutes(schedule[i].end);
+      if (nowMin >= bStart && nowMin < bEnd) {
+        currentIdx = i;
+        break;
+      }
+    }
+
+    // Current block on NOW surface
+    const blockNameEl = document.getElementById('now-block-name');
+    const blockMetaEl = document.getElementById('now-block-meta');
+    const blockProgEl = document.getElementById('block-progress-bar');
+    const todayNowBlock = document.getElementById('today-now-block');
+    const todayNowMeta = document.getElementById('today-now-meta');
+
+    if (currentIdx >= 0) {
+      const b = schedule[currentIdx];
+      const bStart = timeToMinutes(b.start);
+      const bEnd = timeToMinutes(b.end);
+      const elapsed = Math.round(((nowMin - bStart) / (bEnd - bStart)) * 100);
+      if (blockNameEl) blockNameEl.innerHTML = formatBlockName(b.name);
+      if (blockMetaEl) blockMetaEl.textContent = fmtTime(b.start) + ' – ' + fmtTime(b.end) + ' · ' + elapsed + '% ELAPSED';
+      if (blockProgEl) blockProgEl.style.width = elapsed + '%';
+      if (todayNowBlock) todayNowBlock.textContent = b.name.toUpperCase();
+      if (todayNowMeta) todayNowMeta.textContent = 'UNTIL ' + fmtTime(b.end);
+    } else {
+      if (blockNameEl) blockNameEl.innerHTML = '<em>Between</em> blocks';
+      if (blockMetaEl) blockMetaEl.textContent = 'UNSCHEDULED TIME';
+      if (blockProgEl) blockProgEl.style.width = '0%';
+      if (todayNowBlock) todayNowBlock.textContent = 'BETWEEN BLOCKS';
+      if (todayNowMeta) todayNowMeta.textContent = '—';
+    }
+
+    // Next blocks
+    const stack = document.getElementById('next-stack');
+    if (stack) {
+      stack.innerHTML = '';
+      const nextIdx = currentIdx >= 0 ? currentIdx + 1 : schedule.findIndex(b => timeToMinutes(b.start) > nowMin);
+      if (nextIdx >= 0 && nextIdx < schedule.length) {
+        const upcoming = schedule.slice(nextIdx, nextIdx + 3);
+        const labels = ['UP NEXT', 'THEN', 'AFTER'];
+        upcoming.forEach((b, i) => {
+          const row = document.createElement('div');
+          row.className = 'next-item';
+          row.innerHTML =
+            '<div class="next-item-row">' +
+              '<div class="next-item-lbl">' + labels[i] + '</div>' +
+              '<div>' +
+                '<div class="next-item-name">' + formatBlockName(b.name) + '</div>' +
+                '<div class="next-item-time">' + fmtTime(b.start) + ' – ' + fmtTime(b.end) +
+                (b.meta ? ' · ' + b.meta : '') + '</div>' +
+              '</div>' +
+            '</div>';
+          stack.appendChild(row);
+        });
+
+        const nextStart = timeToMinutes(upcoming[0].start);
+        const until = nextStart - nowMin;
+        const cd = document.getElementById('next-countdown');
+        if (cd) cd.textContent = until > 0 ? ('IN ' + until + ' MIN') : '—';
+      } else {
+        stack.innerHTML = '<div class="next-item"><div class="next-item-row"><div class="next-item-lbl">DONE</div><div><div class="next-item-name">Day <em>complete</em></div><div class="next-item-time">Rest well.</div></div></div></div>';
+        const cd = document.getElementById('next-countdown');
+        if (cd) cd.textContent = 'DONE';
+      }
+    }
+
+    // Timeline
+    const tl = document.getElementById('timeline');
+    if (tl) {
+      tl.innerHTML = '';
+      schedule.forEach((b, i) => {
+        const bEnd = timeToMinutes(b.end);
+        const past = nowMin >= bEnd;
+        const active = i === currentIdx;
+        const row = document.createElement('div');
+        row.className = 'tl-row' + (past ? ' past' : '') + (active ? ' active' : '');
+        row.innerHTML =
+          '<div class="tl-time">' + fmtTime(b.start) + '</div>' +
+          '<div class="tl-dot"></div>' +
+          '<div class="tl-name">' + b.name + '</div>' +
+          '<div class="tl-meta">' + b.meta + '</div>';
+        tl.appendChild(row);
+      });
+      const cnt = document.getElementById('today-blocks-count');
+      if (cnt) cnt.textContent = schedule.length + ' BLOCKS';
+    }
+  }
+
+  // =========================================================
+  // SPARKLINES
+  // =========================================================
+  function spark(id, arr, color) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '';
+    const max = Math.max(...arr);
+    arr.forEach(v => {
+      const s = document.createElement('span');
+      s.style.height = (4 + (v/max) * 9) + 'px';
+      if (color) s.style.background = color;
+      el.appendChild(s);
+    });
+  }
+  spark('sp-weight', [12,11,10,9,10,8,7], '#2E7D5F');
+  spark('sp-hrv',    [4,5,6,5,7,8,9],    '#2E7D5F');
+  spark('sp-reg',    [3,5,7,9,11,12,14], '#6B6359');
+
+  // =========================================================
+  // ROTATION
+  // =========================================================
+  let currentIdx = 1; // start on TODAY
+  let autoOn = true;
+  let lastTick = Date.now();
+
+  function getCurrentDuration() {
+    return ROTATE_DURATIONS[SURFACES[currentIdx]];
+  }
+
+  function show(idx) {
+    currentIdx = (idx + SURFACES.length) % SURFACES.length;
+    document.querySelectorAll('.surface').forEach((el, i) => {
+      el.classList.toggle('active', i === currentIdx);
+    });
+    document.querySelectorAll('.nav-btn').forEach((el, i) => {
+      el.classList.toggle('active', i === currentIdx);
+    });
+    lastTick = Date.now();
+    document.getElementById('rot-prog').style.width = '0%';
+    // Scroll to top of surface
+    window.scrollTo(0, 0);
+  }
+
+  function tick() {
+    if (autoOn) {
+      const elapsed = Date.now() - lastTick;
+      const duration = getCurrentDuration();
+      const pct = Math.min(100, (elapsed / duration) * 100);
+      document.getElementById('rot-prog').style.width = pct + '%';
+      if (elapsed >= duration) {
+        // Adaptive next: bias toward primary surface during its phase
+        const primary = getPrimarySurface();
+        let next = currentIdx + 1;
+        if (next >= SURFACES.length) next = 0;
+        // After cycling all 4, occasionally insert primary surface
+        // (simple approach: if leaving SPRINT, return to primary)
+        if (currentIdx === 3) next = primary;
+        show(next);
+      }
+    } else {
+      document.getElementById('rot-prog').style.width = '0%';
+    }
+  }
+
+  document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+    btn.addEventListener('click', () => show(i));
+  });
+
+  document.getElementById('auto-toggle').addEventListener('click', () => {
+    autoOn = !autoOn;
+    const btn = document.getElementById('auto-toggle');
+    btn.classList.toggle('on', autoOn);
+    btn.textContent = autoOn ? 'AUTO' : 'PAUSED';
+    lastTick = Date.now();
+  });
+
+  // Swipe gestures for tablet
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 60) {
+      if (dx < 0) show(currentIdx + 1);
+      else show(currentIdx - 1);
+    }
+  });
+
+  // Keyboard for desktop testing
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') show(currentIdx + 1);
+    else if (e.key === 'ArrowLeft') show(currentIdx - 1);
+    else if (e.key === ' ') {
+      e.preventDefault();
+      document.getElementById('auto-toggle').click();
+    }
+  });
+
+  // =========================================================
+  // INIT
+  // =========================================================
+  renderTime();
+  setInterval(renderTime, 1000);
+  setInterval(tick, 100);
+
+  // Auto-reload every 6 hours to prevent memory drift on Fire OS
+  setTimeout(() => window.location.reload(), 6 * 60 * 60 * 1000);
+</script>
+</body>
+</html>
