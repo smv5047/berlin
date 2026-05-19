@@ -14,14 +14,15 @@
     --bg: #EDE3D0;
     --card: #F6EEDC;
     --card-2: #F0E7D0;
-    --border: #E0D4BB;
-    --border-2: #E5DCC9;
+    --border: #D6C8A9;
+    --border-2: #DCCFB1;
     --text: #1C1A15;
-    --mute2: #6B6359;
-    --label: #9A9388;
-    --accent: #D85A30;
-    --ok: #2E7D5F;
-    --warn: #C54B2B;
+    --mute2: #3F3A32;
+    --label: #5E574C;
+    --accent: #C54915;
+    --ok: #1F6B4F;
+    --warn: #B4391C;
+    --rail-h: 56px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -31,15 +32,24 @@
     color: var(--text);
     font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
     width: 800px;
-    min-height: 1280px;
+    height: 1280px;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
   }
 
   body {
-    padding: 18px 18px 90px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stage {
+    flex: 1;
+    padding: 14px 18px 18px;
+    overflow: hidden;
+    position: relative;
   }
 
   em, .i { font-family: 'IBM Plex Serif', Georgia, serif; font-style: italic; font-weight: 400; }
@@ -51,53 +61,148 @@
   .muted { color: var(--label); }
   .mute2 { color: var(--mute2); }
 
-  /* SYSTEM BAR */
-  .sysbar {
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 11px; color: var(--mute2); letter-spacing: 0.14em; font-weight: 500;
-    margin-bottom: 14px;
-    padding-bottom: 12px;
+  /* TOP RAIL — replaces bottom nav + sysbar */
+  .toprail {
+    position: sticky; top: 0;
+    width: 800px; min-height: var(--rail-h);
+    background: rgba(237,227,208,0.97);
     border-bottom: 0.5px solid var(--border);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex; align-items: stretch; justify-content: space-between;
+    z-index: 50;
   }
-  .sysbar .dot { color: var(--accent); }
+  .rail-brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 18px;
+    font-size: 13px; color: var(--mute2); letter-spacing: 0.16em; font-weight: 500;
+    border-right: 0.5px solid var(--border);
+  }
+  .rail-brand .dot { color: var(--accent); font-size: 14px; }
+  .rail-tabs {
+    display: flex; flex: 1;
+  }
+  .rail-tab {
+    flex: 1;
+    background: transparent; border: none; cursor: pointer;
+    font-family: inherit;
+    font-size: 13px; letter-spacing: 0.18em; font-weight: 500;
+    color: var(--label);
+    border-left: 0.5px solid var(--border);
+    padding: 10px 8px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px;
+    min-height: 44px;
+    position: relative;
+  }
+  .rail-tab .n { font-size: 11px; color: var(--accent); letter-spacing: 0.22em; }
+  .rail-tab .t { font-size: 15px; color: inherit; letter-spacing: 0.18em; }
+  .rail-tab.active { color: var(--text); background: var(--card); }
+  .rail-tab.active::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -0.5px;
+    height: 2px; background: var(--accent);
+  }
+  .rail-aux {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 16px;
+    border-left: 0.5px solid var(--border);
+  }
+  .rail-aux .clock {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px; font-weight: 500; color: var(--text); letter-spacing: -0.01em;
+    min-width: 64px; text-align: right;
+  }
+  .rail-aux .clock .colon { color: var(--accent); }
+  .rail-aux .auto-pill {
+    font-family: inherit; background: transparent;
+    border: 0.5px solid var(--border);
+    color: var(--mute2); font-size: 11px; letter-spacing: 0.16em; font-weight: 500;
+    padding: 6px 10px; border-radius: 6px;
+    cursor: pointer;
+  }
+  .rail-aux .auto-pill.on { color: var(--accent); border-color: var(--accent); }
+  .rail-progress {
+    position: absolute; left: 0; right: 0; bottom: -0.5px;
+    height: 2px; background: transparent; z-index: 51; pointer-events: none;
+  }
+  .rail-progress > div {
+    height: 100%; background: var(--accent); width: 0%;
+    transition: width 0.1s linear; opacity: 0.5;
+  }
 
-  /* SURFACE HEADER */
+  /* SURFACE HEADER — slim, no longer takes prime fold */
   .surface-header {
     display: flex; align-items: baseline; gap: 14px;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
   }
   .surface-num {
-    font-size: 12px; color: var(--accent); letter-spacing: 0.18em; font-weight: 500;
+    font-size: 13px; color: var(--accent); letter-spacing: 0.2em; font-weight: 500;
   }
   .surface-title {
-    font-family: 'IBM Plex Serif', Georgia, serif; font-size: 30px; line-height: 1;
+    font-family: 'IBM Plex Serif', Georgia, serif; font-size: 26px; line-height: 1;
   }
   .surface-desc {
-    font-size: 10px; color: var(--mute2); letter-spacing: 0.14em; margin-left: auto; text-align: right;
+    font-size: 12px; color: var(--mute2); letter-spacing: 0.16em; margin-left: auto; text-align: right; font-weight: 500;
   }
 
   /* SURFACE CONTAINER */
   .surface {
     display: none;
-    animation: fadeIn 0.45s ease-out;
+    animation: fadeIn 0.35s ease-out;
+    height: 100%;
+    flex-direction: column;
   }
-  .surface.active { display: block; }
+  .surface.active { display: flex; }
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
+  /* SUB-TABS within a surface */
+  .subtabs {
+    display: flex; gap: 6px;
+    background: var(--card-2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 5px;
+    margin-bottom: 12px;
+  }
+  .subtab {
+    flex: 1;
+    background: transparent; border: none; cursor: pointer;
+    font-family: inherit;
+    font-size: 13px; letter-spacing: 0.18em; font-weight: 500;
+    color: var(--label);
+    padding: 12px 10px;
+    border-radius: 8px;
+    min-height: 44px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .subtab.active {
+    background: var(--card);
+    color: var(--text);
+    box-shadow: 0 1px 2px rgba(28,26,21,0.06);
+  }
+  .subtab .status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--label);
+  }
+  .subtab .status-dot.ok { background: var(--ok); }
+  .subtab .status-dot.warn { background: var(--accent); }
+  .subpanel { display: none; flex: 1; min-height: 0; }
+  .subpanel.active { display: block; }
 
   /* CARD PRIMITIVES */
   .card {
     background: var(--card);
     border: 0.5px solid var(--border);
     border-radius: 14px;
-    padding: 18px 20px;
-    margin-bottom: 12px;
+    padding: 18px 22px;
+    margin-bottom: 10px;
   }
   .card-head {
     display: flex; justify-content: space-between; align-items: baseline;
-    font-size: 11px; color: var(--label); letter-spacing: 0.14em;
+    font-size: 13px; color: var(--mute2); letter-spacing: 0.16em; font-weight: 500;
     margin-bottom: 14px;
   }
   .bar { height: 4px; background: var(--border-2); border-radius: 2px; overflow: hidden; margin-bottom: 12px; }
@@ -109,8 +214,8 @@
      SURFACE 01 — NOW
   ========================================================= */
   .now-hero-card {
-    padding: 26px 24px 22px;
-    margin-bottom: 12px;
+    padding: 22px 24px 20px;
+    margin-bottom: 10px;
   }
   .now-time {
     display: flex; align-items: baseline; gap: 4px;
@@ -118,21 +223,21 @@
   }
   .now-time .big {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 110px; font-weight: 500; line-height: 0.9; letter-spacing: -0.04em;
+    font-size: 108px; font-weight: 500; line-height: 0.9; letter-spacing: -0.04em;
   }
   .now-time .colon { color: var(--accent); }
   .now-time .sec {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 28px; color: var(--label); margin-left: 10px;
+    font-size: 30px; color: var(--label); margin-left: 10px;
     line-height: 0.9;
   }
   .now-date {
-    font-size: 12px; color: var(--mute2); letter-spacing: 0.14em;
-    margin-bottom: 28px;
+    font-size: 15px; color: var(--mute2); letter-spacing: 0.14em; font-weight: 500;
+    margin-bottom: 18px;
   }
   .now-label {
-    font-size: 11px; color: var(--accent); letter-spacing: 0.2em;
-    margin-bottom: 10px;
+    font-size: 14px; color: var(--accent); letter-spacing: 0.2em; font-weight: 500;
+    margin-bottom: 8px;
   }
   .now-block {
     font-family: 'IBM Plex Serif', Georgia, serif;
@@ -140,115 +245,89 @@
     margin-bottom: 8px;
   }
   .now-block-meta {
-    font-size: 12px; color: var(--mute2); letter-spacing: 0.1em;
+    font-size: 15px; color: var(--mute2); letter-spacing: 0.1em; font-weight: 500;
   }
   .block-progress {
-    height: 4px; background: var(--border-2); border-radius: 2px; overflow: hidden;
-    margin-top: 14px;
+    height: 5px; background: var(--border-2); border-radius: 3px; overflow: hidden;
+    margin-top: 12px;
   }
   .block-progress > div { height: 100%; background: var(--accent); }
 
   .next-stack { display: flex; flex-direction: column; }
   .next-item {
-    padding: 14px 0;
+    padding: 12px 0;
     border-top: 0.5px solid var(--border-2);
   }
   .next-item:first-of-type { border-top: none; padding-top: 0; }
   .next-item-row {
-    display: grid; grid-template-columns: 80px 1fr;
-    gap: 14px; align-items: baseline;
+    display: grid; grid-template-columns: 90px 1fr;
+    gap: 16px; align-items: baseline;
   }
-  .next-item-lbl { font-size: 11px; color: var(--label); letter-spacing: 0.16em; }
+  .next-item-lbl { font-size: 14px; color: var(--accent); letter-spacing: 0.18em; font-weight: 500; }
   .next-item-name {
     font-family: 'IBM Plex Serif', Georgia, serif;
-    font-size: 22px; line-height: 1.1; margin-bottom: 4px;
+    font-size: 24px; line-height: 1.1; margin-bottom: 4px;
   }
   .next-item-time {
-    font-size: 11px; color: var(--mute2); letter-spacing: 0.1em;
+    font-size: 14px; color: var(--mute2); letter-spacing: 0.1em; font-weight: 500;
   }
-
-  /* Timeline — compact for portrait */
-  .timeline { margin-top: 4px; }
-  .tl-row {
-    display: grid; grid-template-columns: 80px 14px 1fr auto;
-    align-items: center;
-    padding: 9px 0;
-    gap: 10px;
-    font-size: 13px;
-    color: var(--mute2);
-  }
-  .tl-row.past { opacity: 0.4; }
-  .tl-row.active {
-    color: var(--text);
-  }
-  .tl-row.active .tl-name { font-weight: 500; }
-  .tl-time { font-size: 11px; letter-spacing: 0.06em; font-family: 'IBM Plex Mono', monospace; }
-  .tl-dot {
-    width: 8px; height: 8px; border-radius: 50%; background: var(--label);
-  }
-  .tl-row.active .tl-dot { background: var(--accent); box-shadow: 0 0 0 4px rgba(216,90,48,0.18); }
-  .tl-row.past .tl-dot { background: var(--border); }
-  .tl-name { font-size: 13px; }
-  .tl-meta { font-size: 10px; color: var(--label); letter-spacing: 0.1em; }
 
   /* =========================================================
      SURFACE 02 — TODAY (PRIMARY)
   ========================================================= */
   .today-hero {
     padding: 22px 24px 20px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
   .today-greet {
     font-family: 'IBM Plex Serif', Georgia, serif;
-    font-size: 36px; line-height: 1.0;
-    margin-bottom: 10px;
+    font-size: 38px; line-height: 1.0;
+    margin-bottom: 8px;
   }
   .today-date {
-    font-size: 12px; color: var(--mute2); letter-spacing: 0.14em;
+    font-size: 15px; color: var(--mute2); letter-spacing: 0.16em; font-weight: 500;
   }
   .today-time-row {
     display: flex; justify-content: space-between; align-items: flex-end;
-    margin-top: 16px;
+    margin-top: 14px;
   }
   .today-clock {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 38px; font-weight: 500; letter-spacing: -0.02em;
+    font-size: 56px; font-weight: 500; letter-spacing: -0.02em; line-height: 1;
   }
   .today-clock .colon { color: var(--accent); }
   .today-status {
     text-align: right;
-    font-size: 11px;
+    font-size: 14px;
     color: var(--mute2);
     letter-spacing: 0.14em;
+    font-weight: 500;
   }
   .today-status .now {
-    color: var(--accent); font-weight: 500;
+    color: var(--accent); font-weight: 600; font-size: 15px;
   }
 
-  .intent-stack { display: flex; flex-direction: column; gap: 14px; }
+  .intent-stack { display: flex; flex-direction: column; gap: 12px; }
   .intent-item {
     border-left: 3px solid var(--accent);
     padding-left: 16px;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
   }
   .intent-item .n {
-    font-size: 11px; color: var(--accent); letter-spacing: 0.22em;
-    margin-bottom: 6px;
+    font-size: 13px; color: var(--accent); letter-spacing: 0.22em; font-weight: 600;
+    margin-bottom: 4px;
   }
   .intent-item .t {
-    font-size: 17px; line-height: 1.35;
+    font-size: 19px; line-height: 1.3;
   }
 
-  .input-section {
-    margin-bottom: 12px;
-  }
   .col-title {
     font-family: 'IBM Plex Serif', Georgia, serif;
-    font-size: 22px; line-height: 1; margin-bottom: 6px;
+    font-size: 26px; line-height: 1; margin-bottom: 4px;
   }
   .col-meta {
-    font-size: 10px; color: var(--label); letter-spacing: 0.16em;
+    font-size: 13px; color: var(--label); letter-spacing: 0.16em; font-weight: 500;
     margin-bottom: 14px;
   }
 
@@ -260,117 +339,120 @@
     background: var(--card-2);
     border: 0.5px solid var(--border);
     border-radius: 10px;
-    padding: 12px 14px;
-    min-height: 80px;
+    padding: 14px 16px;
+    min-height: 88px;
     display: flex; flex-direction: column; justify-content: space-between;
   }
   .input-tile.full { grid-column: span 2; }
   .input-tile .tlbl {
-    font-size: 10px; color: var(--label); letter-spacing: 0.16em;
+    font-size: 13px; color: var(--label); letter-spacing: 0.18em; font-weight: 600;
   }
   .input-tile .tval {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 26px; font-weight: 500; line-height: 1; margin-top: 6px;
+    font-size: 34px; font-weight: 500; line-height: 1; margin-top: 6px;
   }
   .input-tile .tval .u {
-    font-size: 11px; color: var(--label); letter-spacing: 0.1em; margin-left: 5px; font-weight: 400;
+    font-size: 13px; color: var(--label); letter-spacing: 0.1em; margin-left: 5px; font-weight: 500;
   }
   .input-tile .tval .target {
-    font-size: 11px; color: var(--label); letter-spacing: 0.1em; margin-left: 5px; font-weight: 400;
+    font-size: 13px; color: var(--label); letter-spacing: 0.1em; margin-left: 5px; font-weight: 500;
   }
   .input-tile.check .tval {
-    font-size: 14px; display: flex; align-items: center; gap: 10px;
+    font-size: 16px; display: flex; align-items: center; gap: 10px;
   }
   .check-mark {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 22px; height: 22px; border-radius: 5px;
-    font-size: 13px;
+    width: 26px; height: 26px; border-radius: 6px;
+    font-size: 14px;
     flex-shrink: 0;
   }
   .check-mark.done { background: var(--text); color: var(--card); }
-  .check-mark.empty { border: 1px solid var(--label); color: transparent; }
+  .check-mark.empty { border: 1.5px solid var(--label); color: transparent; }
   .check-mark.miss { background: var(--border-2); color: var(--label); }
 
   /* =========================================================
      SURFACE 03 — WEEK
   ========================================================= */
   .week-hero {
-    padding: 22px 24px;
-    margin-bottom: 12px;
+    padding: 20px 24px;
+    margin-bottom: 10px;
+  }
+  .week-hero-label {
+    font-size: 14px; color: var(--accent); letter-spacing: 0.22em; font-weight: 600; margin-bottom: 8px;
   }
   .week-hero-title {
-    font-family: 'IBM Plex Serif', Georgia, serif; font-size: 32px; line-height: 1;
+    font-family: 'IBM Plex Serif', Georgia, serif; font-size: 34px; line-height: 1;
     margin-bottom: 8px;
   }
   .week-hero-sub {
-    font-size: 11px; color: var(--mute2); letter-spacing: 0.14em;
+    font-size: 14px; color: var(--mute2); letter-spacing: 0.14em; font-weight: 500;
   }
   .week-stats {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
     margin-top: 18px;
-    padding-top: 16px;
+    padding-top: 14px;
     border-top: 0.5px solid var(--border-2);
   }
   .wh-stat .l {
-    font-size: 10px; color: var(--label); letter-spacing: 0.14em; margin-bottom: 6px;
+    font-size: 13px; color: var(--label); letter-spacing: 0.18em; font-weight: 600; margin-bottom: 4px;
   }
   .wh-stat .v {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 26px; font-weight: 500;
+    font-size: 42px; font-weight: 500; line-height: 1;
   }
 
-  .front-title { font-family: 'IBM Plex Serif', Georgia, serif; font-size: 22px; line-height: 1.1; margin-bottom: 4px; }
-  .front-sub { font-size: 11px; color: var(--mute2); letter-spacing: 0.14em; margin-bottom: 14px; }
+  .front-title { font-family: 'IBM Plex Serif', Georgia, serif; font-size: 28px; line-height: 1.1; margin-bottom: 4px; }
+  .front-sub { font-size: 14px; color: var(--mute2); letter-spacing: 0.14em; font-weight: 500; margin-bottom: 14px; }
 
   .signal-row {
     display: flex; justify-content: space-between; align-items: flex-end;
-    padding: 11px 0;
+    padding: 12px 0;
     border-top: 0.5px solid var(--border-2);
   }
   .signal-row:first-of-type { border-top: none; padding-top: 0; }
-  .signal-label { font-size: 13px; color: var(--mute2); }
-  .signal-value { font-family: 'IBM Plex Mono', monospace; font-size: 18px; font-weight: 500; }
-  .signal-trend { font-size: 11px; color: var(--label); letter-spacing: 0.1em; }
-  .spark { display: inline-flex; align-items: end; gap: 2px; height: 14px; margin-right: 8px; vertical-align: middle; }
-  .spark span { width: 3px; background: var(--mute2); border-radius: 1px; }
+  .signal-label { font-size: 16px; color: var(--mute2); font-weight: 500; }
+  .signal-value { font-family: 'IBM Plex Mono', monospace; font-size: 30px; font-weight: 500; line-height: 1; }
+  .signal-trend { font-size: 13px; color: var(--mute2); letter-spacing: 0.1em; font-weight: 600; margin-top: 4px; }
+  .spark { display: inline-flex; align-items: end; gap: 2px; height: 18px; margin-right: 10px; vertical-align: middle; }
+  .spark span { width: 4px; background: var(--mute2); border-radius: 1px; }
 
   .rollup-section {
-    margin-top: 14px; padding-top: 12px;
+    margin-top: 12px; padding-top: 12px;
     border-top: 0.5px dashed var(--border);
   }
   .rollup-head {
-    font-size: 10px; color: var(--label); letter-spacing: 0.18em; margin-bottom: 10px;
+    font-size: 13px; color: var(--label); letter-spacing: 0.18em; font-weight: 600; margin-bottom: 8px;
   }
   .rollup-row {
     display: flex; justify-content: space-between;
-    font-size: 13px; padding: 4px 0;
+    font-size: 16px; padding: 5px 0;
   }
-  .rollup-row .r { font-family: 'IBM Plex Mono', monospace; color: var(--text); }
+  .rollup-row .r { font-family: 'IBM Plex Mono', monospace; color: var(--text); font-weight: 500; }
 
   /* =========================================================
      SURFACE 04 — SPRINT
   ========================================================= */
   .sprint-hero {
-    padding: 26px 24px 24px;
-    margin-bottom: 12px;
+    padding: 22px 24px 22px;
+    margin-bottom: 10px;
   }
   .sprint-label {
-    font-size: 11px; color: var(--accent); letter-spacing: 0.2em; font-weight: 500; margin-bottom: 10px;
+    font-size: 14px; color: var(--accent); letter-spacing: 0.22em; font-weight: 600; margin-bottom: 8px;
   }
   .sprint-hero-title {
-    font-family: 'IBM Plex Serif', Georgia, serif; font-size: 38px; line-height: 1.02; margin-bottom: 8px;
+    font-family: 'IBM Plex Serif', Georgia, serif; font-size: 40px; line-height: 1.02; margin-bottom: 8px;
   }
   .sprint-hero-sub {
-    font-size: 11px; color: var(--mute2); letter-spacing: 0.14em; margin-bottom: 18px;
+    font-size: 14px; color: var(--mute2); letter-spacing: 0.14em; font-weight: 500; margin-bottom: 16px;
   }
   .sprint-summary {
     font-family: 'IBM Plex Serif', Georgia, serif;
-    font-size: 16px; line-height: 1.55;
+    font-size: 18px; line-height: 1.5;
     color: #2A2620;
   }
 
   .spstrip-card {
-    padding: 18px 22px;
+    padding: 22px 24px;
     margin-bottom: 10px;
   }
   .spstrip-row-top {
@@ -378,98 +460,61 @@
     margin-bottom: 12px;
   }
   .spstrip-lbl {
-    font-size: 10px; color: var(--label); letter-spacing: 0.18em;
+    font-size: 13px; color: var(--label); letter-spacing: 0.2em; font-weight: 600;
   }
   .spstrip-status {
-    font-size: 10px; letter-spacing: 0.16em; font-weight: 500;
+    font-size: 13px; letter-spacing: 0.18em; font-weight: 600;
   }
   .spstrip-title {
-    font-family: 'IBM Plex Serif', Georgia, serif; font-size: 20px; line-height: 1.1; margin-bottom: 12px;
+    font-family: 'IBM Plex Serif', Georgia, serif; font-size: 26px; line-height: 1.1; margin-bottom: 14px;
   }
   .spstrip-row {
     display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;
   }
   .spstrip-side {
-    font-size: 11px; color: var(--label); letter-spacing: 0.1em; font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; color: var(--label); letter-spacing: 0.12em; font-family: 'IBM Plex Mono', monospace; font-weight: 500;
   }
   .spstrip-current {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 30px; font-weight: 500;
+    font-size: 48px; font-weight: 500; line-height: 1;
+  }
+  .spstrip-pct {
+    font-size: 13px; letter-spacing: 0.18em; font-weight: 600;
   }
 
   .narr-card { padding: 18px 22px; margin-bottom: 10px; }
   .narr-section { margin-bottom: 14px; }
   .narr-section:last-child { margin-bottom: 0; }
   .narr-head {
-    font-size: 10px; color: var(--label); letter-spacing: 0.18em; margin-bottom: 6px;
+    font-size: 13px; color: var(--accent); letter-spacing: 0.2em; font-weight: 600; margin-bottom: 6px;
   }
   .narr-body {
-    font-size: 13px; line-height: 1.55; color: #2A2620;
+    font-size: 16px; line-height: 1.5; color: #2A2620;
   }
 
-  /* =========================================================
-     BOTTOM NAV — touch-friendly
-  ========================================================= */
-  .nav-bar {
-    position: fixed; bottom: 0; left: 0;
-    width: 800px;
-    background: rgba(237,227,208,0.96);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-top: 0.5px solid var(--border);
-    padding: 14px 18px;
-    display: flex; justify-content: space-between; align-items: center;
-    z-index: 50;
-    gap: 10px;
-  }
-  .nav-left { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
-  .nav-btn {
-    background: transparent; border: none;
-    font-family: inherit; font-size: 11px; letter-spacing: 0.16em; font-weight: 500;
-    color: var(--label); cursor: pointer;
-    padding: 10px 12px;
-    border-radius: 8px;
-    transition: all 0.15s;
-    white-space: nowrap;
-    min-height: 44px;
-  }
-  .nav-btn:active { background: var(--card-2); }
-  .nav-btn.active { color: var(--text); background: var(--card); }
-  .nav-btn.active .dot {
-    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
-    background: var(--accent); margin-right: 6px; vertical-align: middle;
-  }
-  .nav-right {
-    display: flex; gap: 12px; align-items: center;
-    font-size: 10px; color: var(--label); letter-spacing: 0.14em;
-  }
-  .auto-toggle {
-    font-family: inherit; background: transparent;
-    border: 0.5px solid var(--border);
-    color: var(--mute2); font-size: 11px; letter-spacing: 0.14em;
-    padding: 10px 14px; border-radius: 8px;
-    min-height: 44px;
-  }
-  .auto-toggle.on { color: var(--accent); border-color: var(--accent); }
-  .rotation-progress {
-    width: 50px; height: 3px; background: var(--border-2); border-radius: 2px; overflow: hidden;
-  }
-  .rotation-progress > div {
-    height: 100%; background: var(--accent); width: 0%;
-    transition: width 0.1s linear;
-  }
-
-  /* No-scroll for kiosk feel */
+  /* No-scroll kiosk */
   html { -webkit-overflow-scrolling: touch; }
 </style>
 </head>
 <body>
 
-<!-- SYSTEM BAR -->
-<div class="sysbar">
-  <div><span class="dot">●</span>&nbsp;&nbsp;OPERATOR OS // V2.6</div>
-  <div id="sb-sprint">SPRINT 26 · DAY 16/42</div>
+<!-- TOP RAIL — brand, surface tabs, clock, auto -->
+<div class="toprail">
+  <div class="rail-brand"><span class="dot">●</span>&nbsp;OPERATOR OS</div>
+  <div class="rail-tabs">
+    <button class="rail-tab" data-idx="0"><span class="n">01</span><span class="t">NOW</span></button>
+    <button class="rail-tab active" data-idx="1"><span class="n">02</span><span class="t">TODAY</span></button>
+    <button class="rail-tab" data-idx="2"><span class="n">03</span><span class="t">WEEK</span></button>
+    <button class="rail-tab" data-idx="3"><span class="n">04</span><span class="t">SPRINT</span></button>
+  </div>
+  <div class="rail-aux">
+    <div class="clock"><span id="rail-hour">14</span><span class="colon">:</span><span id="rail-min">25</span></div>
+    <button class="auto-pill on" id="auto-toggle">AUTO</button>
+  </div>
+  <div class="rail-progress"><div id="rot-prog"></div></div>
 </div>
+
+<div class="stage">
 
 <!-- ==================== SURFACE 01 : NOW ==================== -->
 <div class="surface" data-surface="now">
@@ -500,14 +545,6 @@
       <span id="next-countdown">IN 35 MIN</span>
     </div>
     <div class="next-stack" id="next-stack"></div>
-  </div>
-
-  <div class="card">
-    <div class="card-head">
-      <span>TODAY · <span id="today-dow">TUESDAY</span></span>
-      <span id="today-blocks-count">12 BLOCKS</span>
-    </div>
-    <div class="timeline" id="timeline"></div>
   </div>
 </div>
 
@@ -554,95 +591,107 @@
     </div>
   </div>
 
-  <div class="card input-section">
-    <div class="card-head">
-      <span>BODY · SUB-200 FRONT</span>
-      <span class="muted">DAILY</span>
-    </div>
-    <div class="col-title">Fuel + <em>move</em>.</div>
-    <div class="col-meta">TRACKED BY 9PM</div>
-    <div class="tile-grid">
-      <div class="input-tile check">
-        <div class="tlbl">WORKOUT</div>
-        <div class="tval"><span class="check-mark empty">○</span> <span class="muted" style="font-size:12px;">PLANNED 4PM</span></div>
+  <div class="subtabs" data-group="today">
+    <button class="subtab active" data-sub="body"><span class="status-dot ok"></span>BODY</button>
+    <button class="subtab" data-sub="build"><span class="status-dot ok"></span>BUILD</button>
+    <button class="subtab" data-sub="self"><span class="status-dot warn"></span>SELF</button>
+  </div>
+
+  <div class="subpanel active" data-sub="body">
+    <div class="card">
+      <div class="card-head">
+        <span>BODY · SUB-200 FRONT</span>
+        <span class="ok">ON PACE</span>
       </div>
-      <div class="input-tile">
-        <div class="tlbl">SLEEP</div>
-        <div class="tval">7.4<span class="u">HRS</span></div>
-      </div>
-      <div class="input-tile">
-        <div class="tlbl">PROTEIN</div>
-        <div class="tval">24<span class="target">/ 180G</span></div>
-      </div>
-      <div class="input-tile">
-        <div class="tlbl">DRINKS</div>
-        <div class="tval">0<span class="target">/ ≤1</span></div>
-      </div>
-      <div class="input-tile full">
-        <div class="tlbl">STEPS</div>
-        <div class="tval">1,842<span class="target">/ 10K</span></div>
+      <div class="col-title">Fuel + <em>move</em>.</div>
+      <div class="col-meta">TRACKED BY 9PM</div>
+      <div class="tile-grid">
+        <div class="input-tile check">
+          <div class="tlbl">WORKOUT</div>
+          <div class="tval"><span class="check-mark empty">○</span> <span class="mute2" style="font-size:14px;">PLANNED 4PM</span></div>
+        </div>
+        <div class="input-tile">
+          <div class="tlbl">SLEEP</div>
+          <div class="tval">7.4<span class="u">HRS</span></div>
+        </div>
+        <div class="input-tile">
+          <div class="tlbl">PROTEIN</div>
+          <div class="tval">24<span class="target">/ 180G</span></div>
+        </div>
+        <div class="input-tile">
+          <div class="tlbl">DRINKS</div>
+          <div class="tval">0<span class="target">/ ≤1</span></div>
+        </div>
+        <div class="input-tile full">
+          <div class="tlbl">STEPS</div>
+          <div class="tval">1,842<span class="target">/ 10K</span></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="card input-section">
-    <div class="card-head">
-      <span>BUILD · WORK + SIDE</span>
-      <span class="muted">DAILY</span>
-    </div>
-    <div class="col-title">Ship the <em>work</em>.</div>
-    <div class="col-meta">WORK HOURS</div>
-    <div class="tile-grid">
-      <div class="input-tile check">
-        <div class="tlbl">WORK TOUCH</div>
-        <div class="tval"><span class="check-mark empty">○</span> <span class="muted" style="font-size:12px;">NEXT</span></div>
+  <div class="subpanel" data-sub="build">
+    <div class="card">
+      <div class="card-head">
+        <span>BUILD · WORK + SIDE</span>
+        <span class="ok">ON PACE</span>
       </div>
-      <div class="input-tile check">
-        <div class="tlbl">PATHWAY</div>
-        <div class="tval"><span class="check-mark miss">—</span> <span class="muted" style="font-size:12px;">N/A</span></div>
-      </div>
-      <div class="input-tile check">
-        <div class="tlbl">PROSPECT</div>
-        <div class="tval"><span class="check-mark empty">○</span> <span class="accent" style="font-size:12px;">GOAL · 1</span></div>
-      </div>
-      <div class="input-tile check">
-        <div class="tlbl">SIDE ENTRY</div>
-        <div class="tval"><span class="check-mark empty">○</span> <span class="muted" style="font-size:12px;">CAPTURE</span></div>
-      </div>
-      <div class="input-tile check full">
-        <div class="tlbl">LINKEDIN</div>
-        <div class="tval"><span class="check-mark empty">○</span> <span class="muted" style="font-size:12px;">1 / 2 THIS WEEK</span></div>
+      <div class="col-title">Ship the <em>work</em>.</div>
+      <div class="col-meta">WORK HOURS</div>
+      <div class="tile-grid">
+        <div class="input-tile check">
+          <div class="tlbl">WORK TOUCH</div>
+          <div class="tval"><span class="check-mark empty">○</span> <span class="mute2" style="font-size:14px;">NEXT</span></div>
+        </div>
+        <div class="input-tile check">
+          <div class="tlbl">PATHWAY</div>
+          <div class="tval"><span class="check-mark miss">—</span> <span class="mute2" style="font-size:14px;">N/A</span></div>
+        </div>
+        <div class="input-tile check">
+          <div class="tlbl">PROSPECT</div>
+          <div class="tval"><span class="check-mark empty">○</span> <span class="accent" style="font-size:14px;">GOAL · 1</span></div>
+        </div>
+        <div class="input-tile check">
+          <div class="tlbl">SIDE ENTRY</div>
+          <div class="tval"><span class="check-mark empty">○</span> <span class="mute2" style="font-size:14px;">CAPTURE</span></div>
+        </div>
+        <div class="input-tile check full">
+          <div class="tlbl">LINKEDIN</div>
+          <div class="tval"><span class="check-mark empty">○</span> <span class="mute2" style="font-size:14px;">1 / 2 THIS WEEK</span></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="card input-section">
-    <div class="card-head">
-      <span>SELF · MAINTENANCE</span>
-      <span class="muted">DAILY</span>
-    </div>
-    <div class="col-title">Don't <em>drift</em>.</div>
-    <div class="col-meta">RITUAL + FAMILY</div>
-    <div class="tile-grid">
-      <div class="input-tile check">
-        <div class="tlbl">MORNING</div>
-        <div class="tval"><span class="check-mark done">✓</span> <span class="ok" style="font-size:12px;">DONE</span></div>
+  <div class="subpanel" data-sub="self">
+    <div class="card">
+      <div class="card-head">
+        <span>SELF · MAINTENANCE</span>
+        <span class="accent">DRIFT RISK</span>
       </div>
-      <div class="input-tile">
-        <div class="tlbl">WRITING</div>
-        <div class="tval">0<span class="target">/ 30M</span></div>
-      </div>
-      <div class="input-tile check">
-        <div class="tlbl">WRITING</div>
-        <div class="tval"><span class="check-mark empty">○</span> <span class="muted" style="font-size:12px;">NEXT CH</span></div>
-      </div>
-      <div class="input-tile check">
-        <div class="tlbl">FAMILY</div>
-        <div class="tval"><span class="check-mark empty">○</span> <span class="muted" style="font-size:12px;">6:30</span></div>
-      </div>
-      <div class="input-tile full">
-        <div class="tlbl">READING</div>
-        <div class="tval">0<span class="target">MIN · CURRENT BOOK</span></div>
+      <div class="col-title">Don't <em>drift</em>.</div>
+      <div class="col-meta">RITUAL + FAMILY</div>
+      <div class="tile-grid">
+        <div class="input-tile check">
+          <div class="tlbl">MORNING</div>
+          <div class="tval"><span class="check-mark done">✓</span> <span class="ok" style="font-size:14px;">DONE</span></div>
+        </div>
+        <div class="input-tile">
+          <div class="tlbl">WRITING</div>
+          <div class="tval">0<span class="target">/ 30M</span></div>
+        </div>
+        <div class="input-tile check">
+          <div class="tlbl">WRITING</div>
+          <div class="tval"><span class="check-mark empty">○</span> <span class="mute2" style="font-size:14px;">NEXT CH</span></div>
+        </div>
+        <div class="input-tile check">
+          <div class="tlbl">FAMILY</div>
+          <div class="tval"><span class="check-mark empty">○</span> <span class="mute2" style="font-size:14px;">6:30</span></div>
+        </div>
+        <div class="input-tile full">
+          <div class="tlbl">READING</div>
+          <div class="tval">0<span class="target">MIN · CURRENT BOOK</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -657,7 +706,7 @@
   </div>
 
   <div class="card week-hero">
-    <div style="font-size:11px;color:var(--accent);letter-spacing:0.2em;font-weight:500;margin-bottom:8px;">WEEK 3 OF SPRINT 26</div>
+    <div class="week-hero-label">WEEK 3 OF SPRINT 26</div>
     <div class="week-hero-title">Week of <em>April 20</em></div>
     <div class="week-hero-sub">MON 20 · TUE 21 · WED 22 · THU 23 · FRI 24 · SAT 25 · SUN 26</div>
     <div class="week-stats">
@@ -667,137 +716,149 @@
       </div>
       <div class="wh-stat">
         <div class="l">ON PACE</div>
-        <div class="v">2<span class="muted" style="font-size:14px;">/3</span></div>
+        <div class="v">2<span class="mute2" style="font-size:18px;">/3</span></div>
       </div>
       <div class="wh-stat">
         <div class="l">HIT RATE</div>
-        <div class="v">78<span class="muted" style="font-size:14px;">%</span></div>
+        <div class="v">78<span class="mute2" style="font-size:18px;">%</span></div>
       </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-head">
-      <span>FRONT · BODY</span>
-      <span class="ok">ON PACE</span>
-    </div>
-    <div class="front-title">Sub-<em>200</em> lbs</div>
-    <div class="front-sub">218 → 207.4 → 199</div>
+  <div class="subtabs" data-group="week">
+    <button class="subtab active" data-sub="body"><span class="status-dot ok"></span>BODY</button>
+    <button class="subtab" data-sub="build"><span class="status-dot ok"></span>BUILD</button>
+    <button class="subtab" data-sub="revenue"><span class="status-dot warn"></span>REVENUE</button>
+  </div>
 
-    <div class="signal-row">
-      <div class="signal-label">Weight · 7-day</div>
-      <div style="text-align:right;">
-        <span class="spark" id="sp-weight"></span>
-        <span class="signal-value">207.4</span>
-        <div class="signal-trend ok">▼ 0.8 / WK</div>
+  <div class="subpanel active" data-sub="body">
+    <div class="card">
+      <div class="card-head">
+        <span>FRONT · BODY</span>
+        <span class="ok">ON PACE</span>
       </div>
-    </div>
-    <div class="signal-row">
-      <div class="signal-label">HRV · 7-day</div>
-      <div style="text-align:right;">
-        <span class="spark" id="sp-hrv"></span>
-        <span class="signal-value">54<span class="muted" style="font-size:11px;">MS</span></span>
-        <div class="signal-trend ok">▲ 4 / WK</div>
-      </div>
-    </div>
-    <div class="signal-row">
-      <div class="signal-label">VO₂ max</div>
-      <div style="text-align:right;">
-        <span class="signal-value">38.4</span>
-        <div class="signal-trend warn">▼ 0.6 / MO</div>
-      </div>
-    </div>
+      <div class="front-title">Sub-<em>200</em> lbs</div>
+      <div class="front-sub">218 → 207.4 → 199</div>
 
-    <div class="rollup-section">
-      <div class="rollup-head">INPUTS · THIS WEEK</div>
-      <div class="rollup-row"><span>Workouts</span><span class="r">3 / 5</span></div>
-      <div class="rollup-row"><span>Protein avg</span><span class="r">152g</span></div>
-      <div class="rollup-row"><span>Sleep avg</span><span class="r">7.1 hr</span></div>
+      <div class="signal-row">
+        <div class="signal-label">Weight · 7-day</div>
+        <div style="text-align:right;">
+          <span class="spark" id="sp-weight"></span>
+          <span class="signal-value">207.4</span>
+          <div class="signal-trend ok">▼ 0.8 / WK</div>
+        </div>
+      </div>
+      <div class="signal-row">
+        <div class="signal-label">HRV · 7-day</div>
+        <div style="text-align:right;">
+          <span class="spark" id="sp-hrv"></span>
+          <span class="signal-value">54<span class="mute2" style="font-size:14px;">MS</span></span>
+          <div class="signal-trend ok">▲ 4 / WK</div>
+        </div>
+      </div>
+      <div class="signal-row">
+        <div class="signal-label">VO₂ max</div>
+        <div style="text-align:right;">
+          <span class="signal-value">38.4</span>
+          <div class="signal-trend warn">▼ 0.6 / MO</div>
+        </div>
+      </div>
+
+      <div class="rollup-section">
+        <div class="rollup-head">INPUTS · THIS WEEK</div>
+        <div class="rollup-row"><span>Workouts</span><span class="r">3 / 5</span></div>
+        <div class="rollup-row"><span>Protein avg</span><span class="r">152g</span></div>
+        <div class="rollup-row"><span>Sleep avg</span><span class="r">7.1 hr</span></div>
+      </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-head">
-      <span>FRONT · BUILD</span>
-      <span class="ok">ON PACE</span>
-    </div>
-    <div class="front-title">Work · <em>Program</em></div>
-    <div class="front-sub">PHASE 1 · 2 · 3</div>
+  <div class="subpanel" data-sub="build">
+    <div class="card">
+      <div class="card-head">
+        <span>FRONT · BUILD</span>
+        <span class="ok">ON PACE</span>
+      </div>
+      <div class="front-title">Work · <em>Program</em></div>
+      <div class="front-sub">PHASE 1 · 2 · 3</div>
 
-    <div class="signal-row">
-      <div class="signal-label">Systems registered</div>
-      <div style="text-align:right;">
-        <span class="spark" id="sp-reg"></span>
-        <span class="signal-value">14</span>
-        <div class="signal-trend ok">+3 / WK</div>
+      <div class="signal-row">
+        <div class="signal-label">Systems registered</div>
+        <div style="text-align:right;">
+          <span class="spark" id="sp-reg"></span>
+          <span class="signal-value">14</span>
+          <div class="signal-trend ok">+3 / WK</div>
+        </div>
       </div>
-    </div>
-    <div class="signal-row">
-      <div class="signal-label">Gov reviews closed</div>
-      <div style="text-align:right;">
-        <span class="signal-value">6</span>
-        <div class="signal-trend">+1 / WK</div>
+      <div class="signal-row">
+        <div class="signal-label">Gov reviews closed</div>
+        <div style="text-align:right;">
+          <span class="signal-value">6</span>
+          <div class="signal-trend">+1 / WK</div>
+        </div>
       </div>
-    </div>
-    <div class="signal-row">
-      <div class="signal-label">Time to approval</div>
-      <div style="text-align:right;">
-        <span class="signal-value">4.2<span class="muted" style="font-size:11px;">D</span></span>
-        <div class="signal-trend ok">▼ FROM 6.1</div>
+      <div class="signal-row">
+        <div class="signal-label">Time to approval</div>
+        <div style="text-align:right;">
+          <span class="signal-value">4.2<span class="mute2" style="font-size:14px;">D</span></span>
+          <div class="signal-trend ok">▼ FROM 6.1</div>
+        </div>
       </div>
-    </div>
 
-    <div class="rollup-section">
-      <div class="rollup-head">INPUTS · THIS WEEK</div>
-      <div class="rollup-row"><span>Stakeholder touches</span><span class="r">8 / 10</span></div>
-      <div class="rollup-row"><span>Pathway sessions</span><span class="r">2 / 2</span></div>
-      <div class="rollup-row"><span>Project runs</span><span class="r">5</span></div>
+      <div class="rollup-section">
+        <div class="rollup-head">INPUTS · THIS WEEK</div>
+        <div class="rollup-row"><span>Stakeholder touches</span><span class="r">8 / 10</span></div>
+        <div class="rollup-row"><span>Pathway sessions</span><span class="r">2 / 2</span></div>
+        <div class="rollup-row"><span>Project runs</span><span class="r">5</span></div>
+      </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-head">
-      <span>FRONT · REVENUE</span>
-      <span class="accent">AT RISK</span>
-    </div>
-    <div class="front-title">Side · first <em>revenue</em></div>
-    <div class="front-sub">$0 · SIGNED BY 5/22</div>
+  <div class="subpanel" data-sub="revenue">
+    <div class="card">
+      <div class="card-head">
+        <span>FRONT · REVENUE</span>
+        <span class="accent">AT RISK</span>
+      </div>
+      <div class="front-title">Side · first <em>revenue</em></div>
+      <div class="front-sub">$0 · SIGNED BY 5/22</div>
 
-    <div class="signal-row">
-      <div class="signal-label">Cash flow · <em>rolling 90d</em></div>
-      <div style="text-align:right;">
-        <span class="spark" id="sp-cash90"></span>
-        <span class="signal-value warn">−$8.4<span class="muted" style="font-size:11px;">K</span></span>
-        <div class="signal-trend ok">▲ $1.2K / 30D</div>
+      <div class="signal-row">
+        <div class="signal-label">Cash flow · <em>rolling 90d</em></div>
+        <div style="text-align:right;">
+          <span class="spark" id="sp-cash90"></span>
+          <span class="signal-value warn">−$8.4<span class="mute2" style="font-size:14px;">K</span></span>
+          <div class="signal-trend ok">▲ $1.2K / 30D</div>
+        </div>
       </div>
-    </div>
-    <div class="signal-row">
-      <div class="signal-label">Warm intros</div>
-      <div style="text-align:right;">
-        <span class="signal-value">3</span>
-        <div class="signal-trend">+1 / WK</div>
+      <div class="signal-row">
+        <div class="signal-label">Warm intros</div>
+        <div style="text-align:right;">
+          <span class="signal-value">3</span>
+          <div class="signal-trend">+1 / WK</div>
+        </div>
       </div>
-    </div>
-    <div class="signal-row">
-      <div class="signal-label">Qualified convos</div>
-      <div style="text-align:right;">
-        <span class="signal-value">2</span>
-        <div class="signal-trend warn">FLAT 2 WKS</div>
+      <div class="signal-row">
+        <div class="signal-label">Qualified convos</div>
+        <div style="text-align:right;">
+          <span class="signal-value">2</span>
+          <div class="signal-trend warn">FLAT 2 WKS</div>
+        </div>
       </div>
-    </div>
-    <div class="signal-row">
-      <div class="signal-label">Proposals sent</div>
-      <div style="text-align:right;">
-        <span class="signal-value">0</span>
-        <div class="signal-trend accent">NEEDS ONE</div>
+      <div class="signal-row">
+        <div class="signal-label">Proposals sent</div>
+        <div style="text-align:right;">
+          <span class="signal-value">0</span>
+          <div class="signal-trend accent">NEEDS ONE</div>
+        </div>
       </div>
-    </div>
 
-    <div class="rollup-section">
-      <div class="rollup-head">INPUTS · THIS WEEK</div>
-      <div class="rollup-row"><span>Prospect outreach</span><span class="r accent">2 / 5</span></div>
-      <div class="rollup-row"><span>LinkedIn posts</span><span class="r">1 / 2</span></div>
-      <div class="rollup-row"><span>Side entries</span><span class="r">4 / 3</span></div>
+      <div class="rollup-section">
+        <div class="rollup-head">INPUTS · THIS WEEK</div>
+        <div class="rollup-row"><span>Prospect outreach</span><span class="r accent">2 / 5</span></div>
+        <div class="rollup-row"><span>LinkedIn posts</span><span class="r">1 / 2</span></div>
+        <div class="rollup-row"><span>Side entries</span><span class="r">4 / 3</span></div>
+      </div>
     </div>
   </div>
 </div>
@@ -819,83 +880,86 @@
     </div>
   </div>
 
-  <div class="card spstrip-card">
-    <div class="spstrip-row-top">
-      <span class="spstrip-lbl">FRONT · BODY</span>
-      <span class="spstrip-status ok">ON PACE</span>
-    </div>
-    <div class="spstrip-title">Sub-<em>200</em> lbs</div>
-    <div class="spstrip-row">
-      <span class="spstrip-side">START · 218</span>
-      <span class="spstrip-side">TARGET · 199</span>
-    </div>
-    <div class="spstrip-current">207.4<span class="muted" style="font-size:13px;margin-left:6px;">LBS</span></div>
-    <div class="bar bar-ok" style="margin-top:12px;margin-bottom:4px;"><div style="width:64%;"></div></div>
-    <div style="font-size:11px;color:var(--ok);letter-spacing:0.14em;">64% COMPLETE</div>
+  <div class="subtabs" data-group="sprint">
+    <button class="subtab active" data-sub="body"><span class="status-dot ok"></span>BODY</button>
+    <button class="subtab" data-sub="build"><span class="status-dot ok"></span>BUILD</button>
+    <button class="subtab" data-sub="revenue"><span class="status-dot warn"></span>REVENUE</button>
+    <button class="subtab" data-sub="next"><span class="status-dot"></span>NEXT 10D</button>
   </div>
 
-  <div class="card spstrip-card">
-    <div class="spstrip-row-top">
-      <span class="spstrip-lbl">FRONT · BUILD</span>
-      <span class="spstrip-status ok">ON PACE</span>
+  <div class="subpanel active" data-sub="body">
+    <div class="card spstrip-card">
+      <div class="spstrip-row-top">
+        <span class="spstrip-lbl">FRONT · BODY</span>
+        <span class="spstrip-status ok">ON PACE</span>
+      </div>
+      <div class="spstrip-title">Sub-<em>200</em> lbs</div>
+      <div class="spstrip-row">
+        <span class="spstrip-side">START · 218</span>
+        <span class="spstrip-side">TARGET · 199</span>
+      </div>
+      <div class="spstrip-current">207.4<span class="mute2" style="font-size:18px;margin-left:8px;">LBS</span></div>
+      <div class="bar bar-ok" style="margin-top:14px;margin-bottom:6px;height:6px;"><div style="width:64%;"></div></div>
+      <div class="spstrip-pct ok">64% COMPLETE</div>
     </div>
-    <div class="spstrip-title">Work <em>Program</em></div>
-    <div class="spstrip-row">
-      <span class="spstrip-side">PHASE 1 · DONE</span>
-      <span class="spstrip-side">PHASES MATURE</span>
-    </div>
-    <div class="spstrip-current">PHASE 2 / 3</div>
-    <div class="bar" style="margin-top:12px;margin-bottom:4px;"><div style="width:48%;"></div></div>
-    <div style="font-size:11px;color:var(--ok);letter-spacing:0.14em;">48% · P2 SCOPED</div>
   </div>
 
-  <div class="card spstrip-card">
-    <div class="spstrip-row-top">
-      <span class="spstrip-lbl">FRONT · REVENUE</span>
-      <span class="spstrip-status accent">AT RISK</span>
+  <div class="subpanel" data-sub="build">
+    <div class="card spstrip-card">
+      <div class="spstrip-row-top">
+        <span class="spstrip-lbl">FRONT · BUILD</span>
+        <span class="spstrip-status ok">ON PACE</span>
+      </div>
+      <div class="spstrip-title">Work <em>Program</em></div>
+      <div class="spstrip-row">
+        <span class="spstrip-side">PHASE 1 · DONE</span>
+        <span class="spstrip-side">PHASES MATURE</span>
+      </div>
+      <div class="spstrip-current">PHASE 2 / 3</div>
+      <div class="bar" style="margin-top:14px;margin-bottom:6px;height:6px;"><div style="width:48%;"></div></div>
+      <div class="spstrip-pct ok">48% · P2 SCOPED</div>
     </div>
-    <div class="spstrip-title">First <em>external</em> revenue</div>
-    <div class="spstrip-row">
-      <span class="spstrip-side">$0</span>
-      <span class="spstrip-side">SIGNED 5/22</span>
-    </div>
-    <div class="spstrip-current accent">$0</div>
-    <div class="bar bar-accent" style="margin-top:12px;margin-bottom:4px;"><div style="width:22%;"></div></div>
-    <div style="font-size:11px;color:var(--accent);letter-spacing:0.14em;">22% · NEEDS PROPOSAL</div>
   </div>
 
-  <div class="card narr-card">
-    <div class="card-head">
-      <span>NEXT 10 DAYS · COMMITMENTS</span>
+  <div class="subpanel" data-sub="revenue">
+    <div class="card spstrip-card">
+      <div class="spstrip-row-top">
+        <span class="spstrip-lbl">FRONT · REVENUE</span>
+        <span class="spstrip-status accent">AT RISK</span>
+      </div>
+      <div class="spstrip-title">First <em>external</em> revenue</div>
+      <div class="spstrip-row">
+        <span class="spstrip-side">$0</span>
+        <span class="spstrip-side">SIGNED 5/22</span>
+      </div>
+      <div class="spstrip-current accent">$0</div>
+      <div class="bar bar-accent" style="margin-top:14px;margin-bottom:6px;height:6px;"><div style="width:22%;"></div></div>
+      <div class="spstrip-pct accent">22% · NEEDS PROPOSAL</div>
     </div>
-    <div class="narr-section">
-      <div class="narr-head">01 · SHIP ONE PROPOSAL</div>
-      <div class="narr-body">Send one proposal this period. Dedicated outbound blocks Tue + Thu.</div>
-    </div>
-    <div class="narr-section">
-      <div class="narr-head">02 · RESTART CARDIO</div>
-      <div class="narr-body">Two zone-2 runs per week. Track VO₂ weekly, not monthly.</div>
-    </div>
-    <div class="narr-section">
-      <div class="narr-head">03 · PHASE 2 SCOPING</div>
-      <div class="narr-body">Scope next phase deliverables — doc to Lead by end of week.</div>
+  </div>
+
+  <div class="subpanel" data-sub="next">
+    <div class="card narr-card">
+      <div class="card-head">
+        <span>NEXT 10 DAYS · COMMITMENTS</span>
+      </div>
+      <div class="narr-section">
+        <div class="narr-head">01 · SHIP ONE PROPOSAL</div>
+        <div class="narr-body">Send one proposal this period. Dedicated outbound blocks Tue + Thu.</div>
+      </div>
+      <div class="narr-section">
+        <div class="narr-head">02 · RESTART CARDIO</div>
+        <div class="narr-body">Two zone-2 runs per week. Track VO₂ weekly, not monthly.</div>
+      </div>
+      <div class="narr-section">
+        <div class="narr-head">03 · PHASE 2 SCOPING</div>
+        <div class="narr-body">Scope next phase deliverables — doc to Lead by end of week.</div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ==================== BOTTOM NAV ==================== -->
-<div class="nav-bar">
-  <div class="nav-left">
-    <button class="nav-btn" data-idx="0">01·NOW</button>
-    <button class="nav-btn active" data-idx="1"><span class="dot"></span>02·TODAY</button>
-    <button class="nav-btn" data-idx="2">03·WEEK</button>
-    <button class="nav-btn" data-idx="3">04·SPRINT</button>
-  </div>
-  <div class="nav-right">
-    <div class="rotation-progress"><div id="rot-prog"></div></div>
-    <button class="auto-toggle on" id="auto-toggle">AUTO</button>
-  </div>
-</div>
+</div><!-- /.stage -->
 
 <script>
   // =========================================================
@@ -1043,6 +1107,12 @@
     if (th) th.textContent = pad(h);
     if (tm) tm.textContent = pad(m);
 
+    // Rail clock (always visible)
+    const rh = document.getElementById('rail-hour');
+    const rm = document.getElementById('rail-min');
+    if (rh) rh.textContent = pad(h);
+    if (rm) rm.textContent = pad(m);
+
     // Greeting
     const greet = document.getElementById('today-greet');
     if (greet) greet.innerHTML = getGreeting(h);
@@ -1136,26 +1206,6 @@
       }
     }
 
-    // Timeline
-    const tl = document.getElementById('timeline');
-    if (tl) {
-      tl.innerHTML = '';
-      schedule.forEach((b, i) => {
-        const bEnd = timeToMinutes(b.end);
-        const past = nowMin >= bEnd;
-        const active = i === currentIdx;
-        const row = document.createElement('div');
-        row.className = 'tl-row' + (past ? ' past' : '') + (active ? ' active' : '');
-        row.innerHTML =
-          '<div class="tl-time">' + fmtTime(b.start) + '</div>' +
-          '<div class="tl-dot"></div>' +
-          '<div class="tl-name">' + b.name + '</div>' +
-          '<div class="tl-meta">' + b.meta + '</div>';
-        tl.appendChild(row);
-      });
-      const cnt = document.getElementById('today-blocks-count');
-      if (cnt) cnt.textContent = schedule.length + ' BLOCKS';
-    }
   }
 
   // =========================================================
@@ -1168,7 +1218,7 @@
     const max = Math.max(...arr);
     arr.forEach(v => {
       const s = document.createElement('span');
-      s.style.height = (4 + (v/max) * 9) + 'px';
+      s.style.height = (5 + (v/max) * 12) + 'px';
       if (color) s.style.background = color;
       el.appendChild(s);
     });
@@ -1194,14 +1244,27 @@
     document.querySelectorAll('.surface').forEach((el, i) => {
       el.classList.toggle('active', i === currentIdx);
     });
-    document.querySelectorAll('.nav-btn').forEach((el, i) => {
+    document.querySelectorAll('.rail-tab').forEach((el, i) => {
       el.classList.toggle('active', i === currentIdx);
     });
     lastTick = Date.now();
     document.getElementById('rot-prog').style.width = '0%';
-    // Scroll to top of surface
-    window.scrollTo(0, 0);
   }
+
+  // Sub-tab switching within each surface
+  document.querySelectorAll('.subtabs').forEach(group => {
+    const tabs = group.querySelectorAll('.subtab');
+    const surface = group.closest('.surface');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const key = tab.dataset.sub;
+        tabs.forEach(t => t.classList.toggle('active', t === tab));
+        surface.querySelectorAll(':scope > .subpanel').forEach(p => {
+          p.classList.toggle('active', p.dataset.sub === key);
+        });
+      });
+    });
+  });
 
   function tick() {
     if (autoOn) {
@@ -1224,7 +1287,7 @@
     }
   }
 
-  document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+  document.querySelectorAll('.rail-tab').forEach((btn, i) => {
     btn.addEventListener('click', () => show(i));
   });
 
